@@ -68,7 +68,7 @@ namespace ProjectHephaistos
                         {
                             Reference = new OpenApiReference
                             {
-                                Type = ReferenceType.SecurityScheme,
+                                Type = ReferenceType.SecurityScheme, //git test
                                 Id = "Bearer"
                             }
                         },
