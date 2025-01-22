@@ -3,12 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\bbence\\source\\repos\\BBenc3\\Hephaistos-backend\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{2410B21B-88AE-4F9B-A3FB-9B15866E9184}|ProjectHephaistos.csproj|c:\\users\\bbence\\source\\repos\\bbenc3\\hephaistos-backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2410B21B-88AE-4F9B-A3FB-9B15866E9184}|ProjectHephaistos.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2410B21B-88AE-4F9B-A3FB-9B15866E9184}|ProjectHephaistos.csproj|c:\\users\\bbence\\source\\repos\\bbenc3\\hephaistos-backend\\controllers\\emailcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2410B21B-88AE-4F9B-A3FB-9B15866E9184}|ProjectHephaistos.csproj|solutionrelative:controllers\\emailcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{2410B21B-88AE-4F9B-A3FB-9B15866E9184}|ProjectHephaistos.csproj|c:\\users\\bbence\\source\\repos\\bbenc3\\hephaistos-backend\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{2410B21B-88AE-4F9B-A3FB-9B15866E9184}|ProjectHephaistos.csproj|solutionrelative:properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2410B21B-88AE-4F9B-A3FB-9B15866E9184}|ProjectHephaistos.csproj|c:\\users\\bbence\\source\\repos\\bbenc3\\hephaistos-backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2410B21B-88AE-4F9B-A3FB-9B15866E9184}|ProjectHephaistos.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,11 +22,24 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "EmailController.cs",
+              "DocumentMoniker": "C:\\Users\\bbence\\source\\repos\\BBenc3\\Hephaistos-backend\\Controllers\\EmailController.cs",
+              "RelativeDocumentMoniker": "Controllers\\EmailController.cs",
+              "ToolTip": "C:\\Users\\bbence\\source\\repos\\BBenc3\\Hephaistos-backend\\Controllers\\EmailController.cs",
+              "RelativeToolTip": "Controllers\\EmailController.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAAwB0AAABeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-22T06:56:04.315Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -32,20 +49,20 @@
               "RelativeDocumentMoniker": "Properties\\launchSettings.json",
               "ToolTip": "C:\\Users\\bbence\\source\\repos\\BBenc3\\Hephaistos-backend\\Properties\\launchSettings.json",
               "RelativeToolTip": "Properties\\launchSettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2025-01-21T10:35:49.162Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\bbence\\source\\repos\\BBenc3\\Hephaistos-backend\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Users\\bbence\\source\\repos\\BBenc3\\Hephaistos-backend\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAJIAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAE8AAAAAAAAAAAAAAEYAAABPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-15T09:06:00.906Z",
               "EditorCaption": ""

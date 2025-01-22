@@ -54,7 +54,7 @@ namespace ProjectHephaistos
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
+
                     Scheme = "Bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
@@ -68,7 +68,7 @@ namespace ProjectHephaistos
                         {
                             Reference = new OpenApiReference
                             {
-                                Type = ReferenceType.SecurityScheme, //git test
+                                Type = ReferenceType.SecurityScheme,
                                 Id = "Bearer"
                             }
                         },
@@ -107,26 +107,22 @@ namespace ProjectHephaistos
                     ClockSkew = TimeSpan.Zero
                 };
             });
-
-            // Add CORS policy.
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAll", policy =>
-                {
-                    policy.AllowAnyOrigin()  // You can specify specific origins here like .WithOrigins("https://example.com")
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
-                });
-            });
         }
 
         private static void ConfigurePipeline(WebApplication app)
         {
             // Ensure HTTPS redirection is used.
             app.UseHttpsRedirection();
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Project Hephaistos API v1");
+                    c.RoutePrefix = string.Empty; // Így a Swagger az alap URL-en érhető el
+                });
+            }
 
-            // Apply CORS policy
-            app.UseCors("AllowAll");  // Applying the "AllowAll" CORS policy
 
             // Use authentication and authorization middleware.
             app.UseAuthentication(); // Authentication middleware comes first.
@@ -134,16 +130,7 @@ namespace ProjectHephaistos
 
             // Map controllers to endpoints
             app.MapControllers();
-
-            // Apply any pending migrations automatically.
-            ApplyMigrations(app);
         }
 
-        private static void ApplyMigrations(WebApplication app)
-        {
-            using var scope = app.Services.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<HephaistosContext>();
-            dbContext.Database.Migrate();
-        }
     }
 }

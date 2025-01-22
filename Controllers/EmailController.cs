@@ -27,7 +27,7 @@ public class EmailController : ControllerBase
         string body = "<h1>Ez egy automatikusan generált email, ne válaszoljon rá.</h1>";
 
         // Send the email using the provided email address
-        await _emailService.SendEmailAsync(emailAddress, subject, body);
+        await _emailService.SendEmailAsync(User.Claims.FirstOrDefault(c => c.Type == "email")?.Value, subject, body);
 
         return Ok($"Email sent to {emailAddress} successfully!");
     }
