@@ -9,15 +9,14 @@
     }
   },
   "profiles": {
-    "https": {
+    "http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": false,
-      "launchUrl": "",
-      "applicationUrl": "https://localhost:7008;http://localhost:5287",
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:5000", // Make sure API is accessible on this port
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
-    }    
+    }
   }
 }

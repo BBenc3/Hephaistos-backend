@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -25,6 +26,7 @@ namespace ProjectHephaistos
             // Run the app.
             app.Run();
         }
+
         private static void ConfigureServices(WebApplicationBuilder builder)
         {
             // Add custom services.
@@ -61,17 +63,17 @@ namespace ProjectHephaistos
 
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
-            {
-                new OpenApiSecurityScheme
-                {
-                    Reference = new OpenApiReference
                     {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>() // No specific scopes required
                     }
-                },
-                Array.Empty<string>() // No specific scopes required
-            }
                 });
             });
 
@@ -105,24 +107,32 @@ namespace ProjectHephaistos
                     ClockSkew = TimeSpan.Zero
                 };
             });
+
+            // Add CORS policy.
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()  // You can specify specific origins here like .WithOrigins("https://example.com")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            });
         }
 
         private static void ConfigurePipeline(WebApplication app)
         {
-            // Enable Swagger only in development environment.
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Project Hephaistos API v1");
-                c.RoutePrefix = string.Empty; // Set Swagger as the root page.
-            });
-
-            // Use middleware for HTTPS redirection, authentication, and authorization.
+            // Ensure HTTPS redirection is used.
             app.UseHttpsRedirection();
+
+            // Apply CORS policy
+            app.UseCors("AllowAll");  // Applying the "AllowAll" CORS policy
+
+            // Use authentication and authorization middleware.
             app.UseAuthentication(); // Authentication middleware comes first.
             app.UseAuthorization();  // Authorization middleware comes after.
 
-            // Map controllers to endpoints.
+            // Map controllers to endpoints
             app.MapControllers();
 
             // Apply any pending migrations automatically.
