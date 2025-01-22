@@ -17,13 +17,21 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = ProjectHephaistos
 build_property.RootNamespace = ProjectHephaistos
+<<<<<<< HEAD
 build_property.ProjectDir = C:\Users\Bence\Documents\Hephaistos-backend\
+=======
+build_property.ProjectDir = C:\Users\bbence\source\repos\BBenc3\Hephaistos-backend\
+>>>>>>> 8e032c6ac56cffb4745a035e1743c60ad8296baf
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+<<<<<<< HEAD
 build_property.MSBuildProjectDirectory = C:\Users\Bence\Documents\Hephaistos-backend
+=======
+build_property.MSBuildProjectDirectory = C:\Users\bbence\source\repos\BBenc3\Hephaistos-backend
+>>>>>>> 8e032c6ac56cffb4745a035e1743c60ad8296baf
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 8.0
 build_property.EnableCodeStyleSeverity = 

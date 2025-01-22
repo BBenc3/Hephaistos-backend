@@ -14,7 +14,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ProjectHephaistos")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
+<<<<<<< HEAD
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b0ac224a35322fb52e6b138ae6cd4b5af5319ae3")]
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3beddb1f1f2bfedd9cc0ddfc43fccd1e163aae11")]
+>>>>>>> 8e032c6ac56cffb4745a035e1743c60ad8296baf
 [assembly: System.Reflection.AssemblyProductAttribute("ProjectHephaistos")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ProjectHephaistos")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

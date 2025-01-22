@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 public class JwtHelper
 {
@@ -76,4 +77,28 @@ public class JwtHelper
             throw new UnauthorizedAccessException("Token validation failed.", ex);
         }
     }
+    public int? ExtractUserIdFromToken(string token)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var jwtToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+
+        if (jwtToken == null)
+        {
+            return null;
+        }
+
+        var userIdClaim = jwtToken?.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);
+        if (userIdClaim == null)
+        {
+            return null;
+        }
+
+        if (int.TryParse(userIdClaim.Value, out int userId))
+        {
+            return userId;
+        }
+        
+        return null;
+    }
+
 }
