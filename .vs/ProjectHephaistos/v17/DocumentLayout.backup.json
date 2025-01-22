@@ -36,7 +36,7 @@
               "RelativeDocumentMoniker": "Controllers\\EmailController.cs",
               "ToolTip": "C:\\Users\\bbence\\source\\repos\\BBenc3\\Hephaistos-backend\\Controllers\\EmailController.cs",
               "RelativeToolTip": "Controllers\\EmailController.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAAAAwB0AAABeAAAAAAAAAA==",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAxwB0AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-22T06:56:04.315Z",
               "EditorCaption": ""
@@ -51,8 +51,7 @@
               "RelativeToolTip": "Properties\\launchSettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-01-21T10:35:49.162Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-21T10:35:49.162Z"
             },
             {
               "$type": "Document",
@@ -64,8 +63,7 @@
               "RelativeToolTip": "Program.cs",
               "ViewState": "AgIAAE8AAAAAAAAAAAAAAEYAAABPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-15T09:06:00.906Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-15T09:06:00.906Z"
             }
           ]
         }
