@@ -107,6 +107,14 @@ namespace ProjectHephaistos
                     ClockSkew = TimeSpan.Zero
                 };
             });
+
+            builder.Services.AddCors(options => 
+                options.AddDefaultPolicy(builder => 
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader()
+                )
+            );
         }
 
         private static void ConfigurePipeline(WebApplication app)
@@ -122,7 +130,7 @@ namespace ProjectHephaistos
                     c.RoutePrefix = string.Empty; // Így a Swagger az alap URL-en érhető el
                 });
             }
-
+            app.UseCors();
 
             // Use authentication and authorization middleware.
             app.UseAuthentication(); // Authentication middleware comes first.
