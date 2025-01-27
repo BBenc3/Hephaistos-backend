@@ -40,87 +40,89 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-public IActionResult Login([FromBody] LoginRequest request)
-{
-    var user = _context.Users.SingleOrDefault(u => u.Email == request.Email);
-    if (user == null)
-        return Unauthorized("Invalid credentials.");
-
-    var (computedHash, _) = HashPasswordWithSalt(request.Password, user.PasswordSalt);
-
-    if (computedHash != user.PasswordHash)
-        return Unauthorized("Invalid credentials.");
-
-    // Generálj egy access tokent
-    var accessToken = _jwthelper.GenerateToken(user.Id, user.Role);
-
-    // Generálj egy refresh tokent
-    var refreshToken = GenerateRefreshToken();
-    var refreshTokenEntity = new RefreshToken
+    public IActionResult Login([FromBody] LoginRequest request)
     {
-        Token = refreshToken,
-        Expiration = DateTime.UtcNow.AddDays(7), // 7 napos érvényesség
-        UserId = user.Id
-    };
+        var user = _context.Users.SingleOrDefault(u => u.Email == request.Email);
+        if (user == null)
+            return Unauthorized("Invalid credentials.");
 
-    _context.RefreshTokens.Add(refreshTokenEntity);
-    _context.SaveChanges();
+        var (computedHash, _) = HashPasswordWithSalt(request.Password, user.PasswordSalt);
 
-    // Válasz vissza az access és refresh tokennel
-    return Ok(new
-    {
-        AccessToken = accessToken,
-        RefreshToken = refreshToken
-    });
-}
+        if (computedHash != user.PasswordHash)
+            return Unauthorized("Invalid credentials.");
+
+        // Generate an access token
+        var accessToken = _jwthelper.GenerateToken(user.Id, user.Role);
+
+        // Generate a refresh token
+        var refreshToken = GenerateRefreshToken();
+        var refreshTokenEntity = new RefreshToken
+        {
+            Token = refreshToken,
+            Expiration = DateTime.UtcNow.AddDays(7), // 7 days validity
+            UserId = user.Id
+        };
+
+        _context.RefreshTokens.Add(refreshTokenEntity);
+        _context.SaveChanges();
+
+        // Return both access and refresh tokens
+        return Ok(new
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken // Include refresh token in response
+        });
+    }
 
 
+    // #warning Unused method
     [HttpPost("refreshToken")]
-public IActionResult RefreshToken([FromBody] string refreshToken)
-{
-    var tokenEntity = _context.RefreshTokens
-        .SingleOrDefault(rt => rt.Token == refreshToken && rt.Expiration > DateTime.UtcNow);
-
-    if (tokenEntity == null)
-        return Unauthorized("Invalid or expired refresh token.");
-
-    // Generálj új access tokent
-    var accessToken = _jwthelper.GenerateToken(tokenEntity.UserId, tokenEntity.User.Role);
-
-    // (Opcionálisan) Generálj új refresh tokent
-    var newRefreshToken = GenerateRefreshToken();
-    tokenEntity.Token = newRefreshToken;
-    tokenEntity.Expiration = DateTime.UtcNow.AddDays(7);
-
-    _context.SaveChanges();
-
-    // Válasz vissza az új access és refresh tokennel
-    return Ok(new
+    public IActionResult RefreshToken([FromBody] string refreshToken)
     {
-        AccessToken = accessToken,
-        RefreshToken = newRefreshToken
-    });
-}
+        var tokenEntity = _context.RefreshTokens
+            .SingleOrDefault(rt => rt.Token == refreshToken && rt.Expiration > DateTime.UtcNow);
 
-   [HttpPost("logout")]
-public IActionResult Logout([FromBody] LogoutRequest request)
-{
-    if (string.IsNullOrEmpty(request.RefreshToken))
-        return BadRequest("Refresh token is required.");
+        if (tokenEntity == null)
+            return Unauthorized("Invalid or expired refresh token.");
 
-    // Ellenőrizd, hogy a refresh token érvényes-e
-    var storedToken = _context.RefreshTokens
-        .SingleOrDefault(rt => rt.Token == request.RefreshToken);
+        // Generálj új access tokent
+        var accessToken = _jwthelper.GenerateToken(tokenEntity.UserId, tokenEntity.User.Role);
 
-    if (storedToken == null)
-        return BadRequest("Invalid refresh token.");
+        // (Opcionálisan) Generálj új refresh tokent
+        var newRefreshToken = GenerateRefreshToken();
+        tokenEntity.Token = newRefreshToken;
+        tokenEntity.Expiration = DateTime.UtcNow.AddDays(7);
 
-    // Eltávolítjuk a refresh tokent az adatbázisból
-    _context.RefreshTokens.Remove(storedToken);
-    _context.SaveChanges();
+        _context.SaveChanges();
 
-    return Ok("User logged out successfully.");
-}
+        // Válasz vissza az új access és refresh tokennel
+        return Ok(new
+        {
+            AccessToken = accessToken,
+            RefreshToken = newRefreshToken
+        });
+    }
+
+    // #warning Unused method
+    [HttpPost("logout")]
+    public IActionResult Logout([FromBody] LogoutRequest request)
+    {
+        if (string.IsNullOrEmpty(request.RefreshToken))
+            return BadRequest("Refresh token is required.");
+
+        // Ellenőrizd, hogy a refresh token érvényes-e
+        var storedToken = _context.RefreshTokens
+            .SingleOrDefault(rt => rt.Token == request.RefreshToken);
+
+        if (storedToken == null)
+            return BadRequest("Invalid refresh token.");
+
+        // Eltávolítjuk a refresh tokent az adatbázisból
+        _context.RefreshTokens.Remove(storedToken);
+        _context.SaveChanges();
+
+        return Ok("User logged out successfully.");
+    }
 
 
     private (string, string) HashPassword(string password)
@@ -150,30 +152,5 @@ public IActionResult Logout([FromBody] LogoutRequest request)
             rng.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);
         }
-    }
-
-    
-
-    public class LoginRequest
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
-    }
-
-    public class RegisterRequest
-    {
-        public string Username { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-    }
-
-    public class RefreshTokenRequest
-    {
-        public string RefreshToken { get; set; }
-    }
-
-    public class LogoutRequest
-    {
-        public string RefreshToken { get; set; }
     }
 }

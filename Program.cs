@@ -28,12 +28,7 @@ namespace ProjectHephaistos
         }
 
         private static void ConfigureServices(WebApplicationBuilder builder)
-        {
-            // Add custom services.
-            builder.Services.AddTransient<EmailService>();
-            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
-            builder.Services.Configure<FtpConfig>(builder.Configuration.GetSection("FtpConfig"));
-
+        {   
             // Register JwtHelper
             builder.Services.AddSingleton<JwtHelper>();
 

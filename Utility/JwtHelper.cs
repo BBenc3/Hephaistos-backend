@@ -14,12 +14,13 @@ public class JwtHelper
     private readonly string _audience;
 
     public JwtHelper(IConfiguration configuration)
-    {
-        _secretKey = configuration["JwtSettings:SecretKey"];
-        _tokenLifetimeInDays = int.Parse(configuration["JwtSettings:TokenLifetimeInDays"] ?? "1");
-        _issuer = configuration["JwtSettings:Issuer"];
-        _audience = configuration["JwtSettings:Audience"];
-    }
+{
+    _secretKey = configuration["Jwt:SecretKey"];
+    _tokenLifetimeInDays = int.Parse(configuration["Jwt:TokenLifetimeInDays"]);
+    _issuer = configuration["Jwt:Issuer"];
+    _audience = configuration["Jwt:Audience"];
+}
+
 
     public string GenerateToken(int userId, string role)
     {
@@ -49,36 +50,20 @@ public class JwtHelper
         return tokenHandler.WriteToken(token);
     }
 
-    public ClaimsPrincipal ValidateToken(string token)
+    /// <summary>
+    /// Extracts the user ID from the token.
+    /// </summary>
+    /// <param name="authorization"></param>
+    /// <returns>userId(int) or null</returns>
+    public int? ExtractUserIdFromToken(string authorization)
     {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var validationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = _issuer,
-            ValidAudience = _audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey)),
-            ClockSkew = TimeSpan.Zero
-        };
+        var token = authorization.Replace("Bearer ", "");
 
-        try
+        if (string.IsNullOrEmpty(token))
         {
-            return tokenHandler.ValidateToken(token, validationParameters, out _);
+            return null;
         }
-        catch (SecurityTokenExpiredException)
-        {
-            throw new UnauthorizedAccessException("Token has expired.");
-        }
-        catch (Exception ex)
-        {
-            throw new UnauthorizedAccessException("Token validation failed.", ex);
-        }
-    }
-    public int? ExtractUserIdFromToken(string token)
-    {
+
         var tokenHandler = new JwtSecurityTokenHandler();
         var jwtToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
 

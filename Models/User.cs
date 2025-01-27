@@ -21,5 +21,5 @@ public partial class User
 
     public string? Role { get; set; }
 
-    public sbyte? Active { get; set; }
+    public sbyte Active { get; set; }
 }

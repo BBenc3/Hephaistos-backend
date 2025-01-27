@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "tletnBe3ihU=",
+  "dgSpecHash": "Qk5aLOOkzQg=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Bence\\documents\\hephaistos-backend\\ProjectHephaistos.csproj",
+  "projectFilePath": "C:\\Users\\Bence\\Hephaistos-backend\\ProjectHephaistos.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Bence\\.nuget\\packages\\bouncycastle.cryptography\\2.5.0\\bouncycastle.cryptography.2.5.0.nupkg.sha512",
     "C:\\Users\\Bence\\.nuget\\packages\\google.protobuf\\3.26.1\\google.protobuf.3.26.1.nupkg.sha512",
