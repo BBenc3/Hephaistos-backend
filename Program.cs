@@ -14,29 +14,30 @@ namespace ProjectHephaistos
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             ConfigureServices(builder);
 
-            // Build the app.
             var app = builder.Build();
 
-            // Configure the middleware pipeline.
             ConfigurePipeline(app);
 
-            // Run the app.
             app.Run();
         }
 
         private static void ConfigureServices(WebApplicationBuilder builder)
-        {   
-            // Register JwtHelper
+        {
+            var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+            var secretKey = jwtSettings["SecretKey"];
+
+            if (string.IsNullOrWhiteSpace(secretKey))
+            {
+                throw new ArgumentNullException(nameof(secretKey), "JWT SecretKey cannot be null or empty.");
+            }
+
             builder.Services.AddSingleton<JwtHelper>();
 
-            // Add controllers and endpoints.
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
 
-            // Configure Swagger with JWT authentication.
             builder.Services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo
@@ -49,11 +50,10 @@ namespace ProjectHephaistos
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
-
                     Scheme = "Bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Description = "Enter 'Bearer' followed by a space and your JWT token.\n\nExample: 'Bearer abc123token'"
+                    Description = "Enter 'Bearer' followed by a space and your JWT token."
                 });
 
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -67,21 +67,16 @@ namespace ProjectHephaistos
                                 Id = "Bearer"
                             }
                         },
-                        Array.Empty<string>() // No specific scopes required
+                        Array.Empty<string>()
                     }
                 });
             });
 
-            // Configure database context with MySQL.
             builder.Services.AddDbContext<HephaistosContext>(options =>
             {
                 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
                 options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 27)));
             });
-
-            // Configure authentication and JWT.
-            var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-            var secretKey = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]);
 
             builder.Services.AddAuthentication(options =>
             {
@@ -98,13 +93,13 @@ namespace ProjectHephaistos
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = jwtSettings["Issuer"],
                     ValidAudience = jwtSettings["Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(secretKey),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
                     ClockSkew = TimeSpan.Zero
                 };
             });
 
             builder.Services.AddCors(options => 
-                options.AddDefaultPolicy(builder => 
+                options.AddDefaultPolicy(builder =>
                     builder.AllowAnyOrigin()
                            .AllowAnyMethod()
                            .AllowAnyHeader()
@@ -114,26 +109,26 @@ namespace ProjectHephaistos
 
         private static void ConfigurePipeline(WebApplication app)
         {
-            // Ensure HTTPS redirection is used.
             app.UseHttpsRedirection();
+
             if (app.Environment.IsDevelopment())
             {
+                app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Project Hephaistos API v1");
-                    c.RoutePrefix = string.Empty; // Így a Swagger az alap URL-en érhető el
+                    c.RoutePrefix = string.Empty;
                 });
             }
+
             app.UseCors();
 
-            // Use authentication and authorization middleware.
-            app.UseAuthentication(); // Authentication middleware comes first.
-            app.UseAuthorization();  // Authorization middleware comes after.
+            app.UseAuthentication();
+            app.UseAuthorization();
 
-            // Map controllers to endpoints
             app.MapControllers();
         }
-
     }
 }
+    

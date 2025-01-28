@@ -15,11 +15,31 @@ public class JwtHelper
 
     public JwtHelper(IConfiguration configuration)
 {
-    _secretKey = configuration["Jwt:SecretKey"];
-    _tokenLifetimeInDays = int.Parse(configuration["Jwt:TokenLifetimeInDays"]);
-    _issuer = configuration["Jwt:Issuer"];
-    _audience = configuration["Jwt:Audience"];
+    _secretKey = configuration["JwtSettings:SecretKey"];
+    if (string.IsNullOrWhiteSpace(_secretKey))
+    {
+        throw new ArgumentNullException(nameof(_secretKey), "JWT secret key cannot be null or empty.");
+    }
+
+    var tokenLifetimeValue = configuration["JwtSettings:TokenLifetimeInDays"];
+    if (string.IsNullOrWhiteSpace(tokenLifetimeValue) || !int.TryParse(tokenLifetimeValue, out _tokenLifetimeInDays))
+    {
+        throw new ArgumentException("JWT token lifetime must be a valid integer.", nameof(_tokenLifetimeInDays));
+    }
+
+    _issuer = configuration["JwtSettings:Issuer"];
+    if (string.IsNullOrWhiteSpace(_issuer))
+    {
+        throw new ArgumentNullException(nameof(_issuer), "JWT issuer cannot be null or empty.");
+    }
+
+    _audience = configuration["JwtSettings:Audience"];
+    if (string.IsNullOrWhiteSpace(_audience))
+    {
+        throw new ArgumentNullException(nameof(_audience), "JWT audience cannot be null or empty.");
+    }
 }
+
 
 
     public string GenerateToken(int userId, string role)
