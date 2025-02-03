@@ -38,39 +38,28 @@ namespace ProjectHephaistos
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
 
-            builder.Services.AddSwaggerGen(options =>
-            {
-                options.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "Project Hephaistos API",
-                    Version = "v1",
-                    Description = "API documentation for Project Hephaistos."
-                });
+   builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Project Hephaistos API",
+        Version = "v1",
+        Description = "API documentation for Project Hephaistos."
+    });
 
-                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Name = "Authorization",
-                    Scheme = "Bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "Enter 'Bearer' followed by a space and your JWT token."
-                });
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Description = "Enter 'Bearer' followed by a space and your JWT token."
+    });
 
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        Array.Empty<string>()
-                    }
-                });
-            });
+    options.OperationFilter<AuthorizeCheckOperationFilter>();
+});
+
 
             builder.Services.AddDbContext<HephaistosContext>(options =>
             {
