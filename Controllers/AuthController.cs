@@ -31,6 +31,7 @@ public class AuthController : ControllerBase
             PasswordSalt = passwordSalt,
             Role = "Student",
             CreatedAt = DateTime.UtcNow
+            active = true
         };
 
         _context.Users.Add(user);
