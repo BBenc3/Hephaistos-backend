@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ProjectHephaistos</name>
+    </assembly>
+    <members>
+        <member name="T:ProjectHephaistos.Migrations.InitialCreate">
+            <inheritdoc />
+        </member>
+        <member name="M:ProjectHephaistos.Migrations.InitialCreate.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ProjectHephaistos.Migrations.InitialCreate.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ProjectHephaistos.Migrations.InitialCreate.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:JwtHelper.ExtractUserIdFromToken(System.String)">
+            <summary>
+            Extracts the user ID from the token.
+            </summary>
+            <param name="authorization"></param>
+            <returns>userId(int) or null</returns>
+        </member>
+    </members>
+</doc>

@@ -7,8 +7,9 @@ using ProjectHephaistos.Data;
 
 namespace ProjectHephaistos.Controllers
 {
-    [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
+    [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
         private readonly HephaistosContext _context;
@@ -22,10 +23,9 @@ namespace ProjectHephaistos.Controllers
 
         // This endpoint will return the logged-in user's data
         [HttpGet("me")]
-        [Authorize] // Ensure the user is authenticated
         public IActionResult GetCurrentUser([FromHeader(Name = "Authorization")] string authorization)
         {
-        
+
             var userId = _jwtHelper.ExtractUserIdFromToken(authorization);
 
             if (!userId.HasValue)
@@ -60,27 +60,20 @@ namespace ProjectHephaistos.Controllers
 
             return Ok(user);
         }
-    
-
-    [Authorize]
-    [HttpDelete]
-    public IActionResult DeleteUser([FromHeader(Name = "Authorization")] string authorization)
-    {
-        var user = _context.Users.FirstOrDefault(c => c.Id == _jwtHelper.ExtractUserIdFromToken(authorization).Value);
-
-        if (user == null)
+        [HttpDelete("me")]
+        public IActionResult DeleteUser([FromHeader(Name = "Authorization")] string authorization)
         {
-            return NotFound();
+            var user = _context.Users.FirstOrDefault(c => c.Id == _jwtHelper.ExtractUserIdFromToken(authorization).Value);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            _context.Users.FirstOrDefault(c => c.Id == user.Id).Active = false;
+            _context.SaveChanges();
+
+            return Ok();
         }
-
-        _context.Users.FirstOrDefault(c => c.Id == user.Id).Active = 0;
-        _context.SaveChanges();
-
-        return Ok();
     }
-   
-
-   
-    }
-
 }
