@@ -70,7 +70,7 @@ namespace ProjectHephaistos.Controllers
                 return NotFound();
             }
 
-            _context.Users.FirstOrDefault(c => c.Id == user.Id).Active = 0;
+            _context.Users.FirstOrDefault(c => c.Id == user.Id).Active = false;
             _context.SaveChanges();
 
             return Ok();

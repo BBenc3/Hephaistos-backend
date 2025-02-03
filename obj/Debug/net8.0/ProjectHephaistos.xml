@@ -4,52 +4,16 @@
         <name>ProjectHephaistos</name>
     </assembly>
     <members>
-        <member name="T:ProjectHephaistos.Migrations.InitialMigration">
+        <member name="T:ProjectHephaistos.Migrations.InitialCreate">
             <inheritdoc />
         </member>
-        <member name="M:ProjectHephaistos.Migrations.InitialMigration.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:ProjectHephaistos.Migrations.InitialCreate.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:ProjectHephaistos.Migrations.InitialMigration.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:ProjectHephaistos.Migrations.InitialCreate.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:ProjectHephaistos.Migrations.InitialMigration.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:ProjectHephaistos.Migrations.AddRefreshToken">
-            <inheritdoc />
-        </member>
-        <member name="M:ProjectHephaistos.Migrations.AddRefreshToken.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:ProjectHephaistos.Migrations.AddRefreshToken.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:ProjectHephaistos.Migrations.AddRefreshToken.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:ProjectHephaistos.Migrations.AddRefreshToken2">
-            <inheritdoc />
-        </member>
-        <member name="M:ProjectHephaistos.Migrations.AddRefreshToken2.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:ProjectHephaistos.Migrations.AddRefreshToken2.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:ProjectHephaistos.Migrations.AddRefreshToken2.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="T:ProjectHephaistos.Migrations.active">
-            <inheritdoc />
-        </member>
-        <member name="M:ProjectHephaistos.Migrations.active.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:ProjectHephaistos.Migrations.active.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:ProjectHephaistos.Migrations.active.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+        <member name="M:ProjectHephaistos.Migrations.InitialCreate.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="M:JwtHelper.ExtractUserIdFromToken(System.String)">
