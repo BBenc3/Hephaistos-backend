@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ProjectHephaistos")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9900b9d07886a2cc97ab89d998740408094a5517")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1aa2b5225adff3870aac8ac673fe78e8db4f6e8a")]
 [assembly: System.Reflection.AssemblyProductAttribute("ProjectHephaistos")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ProjectHephaistos")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
