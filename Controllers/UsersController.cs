@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjectHephaistos.Models;
-using Microsoft.AspNetCore.Http;
-using System.Linq;
 using ProjectHephaistos.Data;
+using System.Linq;
+using System.Security.Claims;
 
 namespace ProjectHephaistos.Controllers
 {
@@ -21,21 +21,16 @@ namespace ProjectHephaistos.Controllers
             _jwtHelper = jwtHelper;
         }
 
-        // This endpoint will return the logged-in user's data
         [HttpGet("me")]
         public IActionResult GetCurrentUser([FromHeader(Name = "Authorization")] string authorization)
         {
-
             var userId = _jwtHelper.ExtractUserIdFromToken(authorization);
-
             if (!userId.HasValue)
             {
                 return Unauthorized("Invalid or expired token.");
             }
 
-            // Step 3: Retrieve user from database
             var user = _context.Users.FirstOrDefault(c => c.Id == userId.Value);
-
             if (user == null)
             {
                 return NotFound("User not found.");
@@ -46,8 +41,13 @@ namespace ProjectHephaistos.Controllers
         [HttpPut("me")]
         public IActionResult UpdateUser([FromHeader(Name = "Authorization")] string authorization, [FromForm] UserUpdateDto userDto)
         {
-            var user = _context.Users.FirstOrDefault(c => c.Id == _jwtHelper.ExtractUserIdFromToken(authorization).Value);
+            var userId = _jwtHelper.ExtractUserIdFromToken(authorization);
+            if (!userId.HasValue)
+            {
+                return Unauthorized();
+            }
 
+            var user = _context.Users.FirstOrDefault(c => c.Id == userId.Value);
             if (user == null)
             {
                 return NotFound();
@@ -55,25 +55,54 @@ namespace ProjectHephaistos.Controllers
 
             user.Username = userDto.Username;
             user.Email = userDto.Email;
-
             _context.SaveChanges();
 
             return Ok(user);
         }
+
         [HttpDelete("me")]
         public IActionResult DeleteUser([FromHeader(Name = "Authorization")] string authorization)
         {
-            var user = _context.Users.FirstOrDefault(c => c.Id == _jwtHelper.ExtractUserIdFromToken(authorization).Value);
+            var userId = _jwtHelper.ExtractUserIdFromToken(authorization);
+            if (!userId.HasValue)
+            {
+                return Unauthorized();
+            }
 
+            var user = _context.Users.FirstOrDefault(c => c.Id == userId.Value);
             if (user == null)
             {
                 return NotFound();
             }
 
-            _context.Users.FirstOrDefault(c => c.Id == user.Id).Active = false;
+            user.Active = false;
             _context.SaveChanges();
 
             return Ok();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("all")]
+        public IActionResult GetAllUsers()
+        {
+            var users = _context.Users.ToList();
+            return Ok(users);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut("role/{id}")]
+        public IActionResult UpdateUserRole(int id, [FromForm] string newRole)
+        {
+            var user = _context.Users.FirstOrDefault(c => c.Id == id);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            user.Role = newRole;
+            _context.SaveChanges();
+
+            return Ok(user);
         }
     }
 }
