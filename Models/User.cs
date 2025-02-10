@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Google.Protobuf.WellKnownTypes;
 
 namespace ProjectHephaistos.Models;
 
@@ -22,7 +23,7 @@ public partial class User
 
     public string? PasswordSalt { get; set; }
 
-    public DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public string? Role { get; set; }
 

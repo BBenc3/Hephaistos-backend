@@ -30,7 +30,6 @@ public class AuthController : ControllerBase
             PasswordHash = passwordHash,
             PasswordSalt = passwordSalt,
             Role = "Student",
-            CreatedAt = DateTime.UtcNow,
             Active = true,
         };
 
