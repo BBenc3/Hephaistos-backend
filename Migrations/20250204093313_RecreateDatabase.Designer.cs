@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectHephaistos.Data;
 
@@ -11,9 +12,11 @@ using ProjectHephaistos.Data;
 namespace ProjectHephaistos.Migrations
 {
     [DbContext(typeof(HephaistosContext))]
-    partial class HephaistosContextModelSnapshot : ModelSnapshot
+    [Migration("20250204093313_RecreateDatabase")]
+    partial class RecreateDatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,7 +75,10 @@ namespace ProjectHephaistos.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int?>("PreviousLessonId")
+                    b.Property<int?>("LessonId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PreviousLessonId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
@@ -277,7 +283,9 @@ namespace ProjectHephaistos.Migrations
                 {
                     b.HasOne("ProjectHephaistos.Models.Lesson", "PreviousLesson")
                         .WithMany()
-                        .HasForeignKey("PreviousLessonId");
+                        .HasForeignKey("PreviousLessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ProjectHephaistos.Models.Teacher", "Teacher")
                         .WithOne("TeacherOfLesson")

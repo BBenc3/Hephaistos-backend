@@ -4,16 +4,28 @@
         <name>ProjectHephaistos</name>
     </assembly>
     <members>
-        <member name="T:ProjectHephaistos.Migrations.InitialCreate">
+        <member name="T:ProjectHephaistos.Migrations.RecreateDatabase">
             <inheritdoc />
         </member>
-        <member name="M:ProjectHephaistos.Migrations.InitialCreate.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:ProjectHephaistos.Migrations.RecreateDatabase.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:ProjectHephaistos.Migrations.InitialCreate.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+        <member name="M:ProjectHephaistos.Migrations.RecreateDatabase.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <inheritdoc />
         </member>
-        <member name="M:ProjectHephaistos.Migrations.InitialCreate.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+        <member name="M:ProjectHephaistos.Migrations.RecreateDatabase.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:ProjectHephaistos.Migrations.LessonModifications">
+            <inheritdoc />
+        </member>
+        <member name="M:ProjectHephaistos.Migrations.LessonModifications.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ProjectHephaistos.Migrations.LessonModifications.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:ProjectHephaistos.Migrations.LessonModifications.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="M:JwtHelper.ExtractUserIdFromToken(System.String)">
