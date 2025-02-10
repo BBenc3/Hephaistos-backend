@@ -25,7 +25,7 @@ public partial class User
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public string? Role { get; set; }
+    public string? Role { get; set; } = "User";
 
     public bool Active { get; set; }
 }

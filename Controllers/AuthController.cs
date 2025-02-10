@@ -29,7 +29,7 @@ public class AuthController : ControllerBase
             Email = request.Email,
             PasswordHash = passwordHash,
             PasswordSalt = passwordSalt,
-            Role = "Student",
+            Role = "user",
             Active = true,
         };
 

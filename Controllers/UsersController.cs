@@ -104,5 +104,21 @@ namespace ProjectHephaistos.Controllers
 
             return Ok(user);
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public IActionResult DeactivateUser(int id)
+        {
+            var user = _context.Users.FirstOrDefault(c => c.Id == id);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            user.Active = false;
+            _context.SaveChanges();
+
+            return Ok();
+        }
     }
 }
