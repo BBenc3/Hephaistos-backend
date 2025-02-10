@@ -2091,3 +2091,5 @@ C:\Users\bbence\Documents\Hephaistos-backend\obj\Debug\net8.0\ProjectHephaistos.
 C:\Users\bbence\Documents\Hephaistos-backend\obj\Debug\net8.0\ref\ProjectHephaistos.dll
 C:\Users\bbence\Documents\Hephaistos-backend\bin\Debug\net8.0\ProjectHephaistos.xml
 C:\Users\bbence\Documents\Hephaistos-backend\obj\Debug\net8.0\ProjectHephaistos.xml
+C:\Users\Bence\documents\hephaistos-backend\bin\Debug\net8.0\ProjectHephaistos.xml
+C:\Users\Bence\documents\hephaistos-backend\obj\Debug\net8.0\ProjectHephaistos.xml
