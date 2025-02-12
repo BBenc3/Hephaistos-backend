@@ -1,0 +1,77 @@
+# Bináris fájlok és build kimenetek
+bin/
+obj/
+
+# User-specifikus beállítások és konfigurációk
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vscode/
+.idea/
+*.vspscc
+*.vssscc
+*.sln.iml
+
+# Rider és Visual Studio
+*.sln.cache
+.vs/
+
+# DotNet build
+project.lock.json
+project.assets.json
+artifacts/
+GeneratedFiles/
+*.psess
+*.pidb
+*.dotCover
+*.coverage
+*.coveragexml
+*.ncrunch*
+*.nupkg
+*.snupkg
+*.vspx
+*.pdb
+
+# Környezeti fájlok és titkos adatok
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+.env
+*.env.local
+.env.*.local
+.env.test
+.env.production
+.env.development
+
+# Logok és cache
+logs/
+*.log
+!README.md
+
+# NPM és Node.js (ha van frontend)
+node_modules/
+npm-debug.log*
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Docker (ha használod)
+.dockerignore
+docker-compose.override.yml
+docker-compose.override.yml
+
+# MySQL és egyéb adatbázis fájlok
+*.mdf
+*.ldf
+*.sqlite
+*.db
+
+# Publish kimenet
+publish/
+out/
+
+# Dependencies
+*.nuget/
+NuGet.Config
+packages/
