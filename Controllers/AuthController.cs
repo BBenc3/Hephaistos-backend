@@ -45,6 +45,10 @@ public class AuthController : ControllerBase
         var user = _context.Users.SingleOrDefault(u => u.Email == request.Email);
         if (user == null)
             return Unauthorized("Invalid credentials.");
+        if (user.Active == false)
+        {
+            return Unauthorized("Inactive user.");
+        }
 
         var (computedHash, _) = HashPasswordWithSalt(request.Password, user.PasswordSalt);
 
