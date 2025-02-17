@@ -1,8 +1,8 @@
-﻿using System.Security.Cryptography;
-using System.Text;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ProjectHephaistos.Data;
 using ProjectHephaistos.Models;
+using System.Security.Cryptography;
+using System.Text;
 
 public class AuthController : ControllerBase
 {

@@ -1,8 +1,7 @@
-﻿using MimeKit;
-using MailKit.Net.Smtp;
+﻿using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
-using System.Threading.Tasks;
+using MimeKit;
 
 public class EmailService
 {

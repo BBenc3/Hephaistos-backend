@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ProjectHephaistos.Models;
 using ProjectHephaistos.Data;
-using System.Linq;
-using System.Security.Claims;
+using ProjectHephaistos.DTOs;
 
 namespace ProjectHephaistos.Controllers
 {
@@ -29,8 +27,16 @@ namespace ProjectHephaistos.Controllers
             {
                 return Unauthorized("Invalid or expired token.");
             }
+            var data = _context.Users.FirstOrDefault(c => c.Id == userId.Value);
+            ProfileRequest user = new ProfileRequest()
+            {
+                Username = data.Username,
+                Email = data.Email,
+                CreatedAt = data.CreatedAt.Date,
+                Role = data.Role,
+                Active = data.Active
 
-            var user = _context.Users.FirstOrDefault(c => c.Id == userId.Value);
+            };
             if (user == null)
             {
                 return NotFound("User not found.");

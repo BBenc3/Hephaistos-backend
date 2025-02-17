@@ -1,6 +1,4 @@
-using System;
 using System.ComponentModel.DataAnnotations;
-using Google.Protobuf.WellKnownTypes;
 
 namespace ProjectHephaistos.Models;
 
@@ -11,7 +9,7 @@ public partial class Student
     public string StudentNumber { get; set; }
     public Course Course { get; set; }
     public User User { get; set; }
-      public List<PickedLessons> StudentLessons { get; set; } = new();
+    public List<PickedLessons> StudentLessons { get; set; } = new();
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

@@ -1,5 +1,3 @@
-using System;
-using Google.Protobuf.WellKnownTypes;
 using System.ComponentModel.DataAnnotations;
 
 namespace ProjectHephaistos.Models;

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -38,27 +37,27 @@ namespace ProjectHephaistos
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
 
-   builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "Project Hephaistos API",
-        Version = "v1",
-        Description = "API documentation for Project Hephaistos."
-    });
+            builder.Services.AddSwaggerGen(options =>
+         {
+             options.SwaggerDoc("v1", new OpenApiInfo
+             {
+                 Title = "Project Hephaistos API",
+                 Version = "v1",
+                 Description = "API documentation for Project Hephaistos."
+             });
 
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.Http,
-        Description = "Enter 'Bearer' followed by a space and your JWT token."
-    });
+             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+             {
+                 Name = "Authorization",
+                 Scheme = "Bearer",
+                 BearerFormat = "JWT",
+                 In = ParameterLocation.Header,
+                 Type = SecuritySchemeType.Http,
+                 Description = "Enter 'Bearer' followed by a space and your JWT token."
+             });
 
-    options.OperationFilter<AuthorizeCheckOperationFilter>();
-});
+             options.OperationFilter<AuthorizeCheckOperationFilter>();
+         });
 
 
             builder.Services.AddDbContext<HephaistosContext>(options =>
@@ -87,7 +86,7 @@ namespace ProjectHephaistos
                 };
             });
 
-            builder.Services.AddCors(options => 
+            builder.Services.AddCors(options =>
                 options.AddDefaultPolicy(builder =>
                     builder.AllowAnyOrigin()
                            .AllowAnyMethod()
@@ -120,4 +119,3 @@ namespace ProjectHephaistos
         }
     }
 }
-    

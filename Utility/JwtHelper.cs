@@ -1,10 +1,7 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 public class JwtHelper
 {
@@ -14,31 +11,31 @@ public class JwtHelper
     private readonly string _audience;
 
     public JwtHelper(IConfiguration configuration)
-{
-    _secretKey = configuration["JwtSettings:SecretKey"];
-    if (string.IsNullOrWhiteSpace(_secretKey))
     {
-        throw new ArgumentNullException(nameof(_secretKey), "JWT secret key cannot be null or empty.");
-    }
+        _secretKey = configuration["JwtSettings:SecretKey"];
+        if (string.IsNullOrWhiteSpace(_secretKey))
+        {
+            throw new ArgumentNullException(nameof(_secretKey), "JWT secret key cannot be null or empty.");
+        }
 
-    var tokenLifetimeValue = configuration["JwtSettings:TokenLifetimeInDays"];
-    if (string.IsNullOrWhiteSpace(tokenLifetimeValue) || !int.TryParse(tokenLifetimeValue, out _tokenLifetimeInDays))
-    {
-        throw new ArgumentException("JWT token lifetime must be a valid integer.", nameof(_tokenLifetimeInDays));
-    }
+        var tokenLifetimeValue = configuration["JwtSettings:TokenLifetimeInDays"];
+        if (string.IsNullOrWhiteSpace(tokenLifetimeValue) || !int.TryParse(tokenLifetimeValue, out _tokenLifetimeInDays))
+        {
+            throw new ArgumentException("JWT token lifetime must be a valid integer.", nameof(_tokenLifetimeInDays));
+        }
 
-    _issuer = configuration["JwtSettings:Issuer"];
-    if (string.IsNullOrWhiteSpace(_issuer))
-    {
-        throw new ArgumentNullException(nameof(_issuer), "JWT issuer cannot be null or empty.");
-    }
+        _issuer = configuration["JwtSettings:Issuer"];
+        if (string.IsNullOrWhiteSpace(_issuer))
+        {
+            throw new ArgumentNullException(nameof(_issuer), "JWT issuer cannot be null or empty.");
+        }
 
-    _audience = configuration["JwtSettings:Audience"];
-    if (string.IsNullOrWhiteSpace(_audience))
-    {
-        throw new ArgumentNullException(nameof(_audience), "JWT audience cannot be null or empty.");
+        _audience = configuration["JwtSettings:Audience"];
+        if (string.IsNullOrWhiteSpace(_audience))
+        {
+            throw new ArgumentNullException(nameof(_audience), "JWT audience cannot be null or empty.");
+        }
     }
-}
 
 
 
@@ -102,7 +99,7 @@ public class JwtHelper
         {
             return userId;
         }
-        
+
         return null;
     }
 

@@ -1,9 +1,6 @@
-using System;
-using Google.Protobuf.WellKnownTypes;
-
 namespace ProjectHephaistos.Models;
 
-    public partial class RefreshToken
+public partial class RefreshToken
 {
     public int Id { get; set; }
     public string Token { get; set; }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
+﻿using Microsoft.EntityFrameworkCore;
 using ProjectHephaistos.Models;
 
 namespace ProjectHephaistos.Data;
@@ -19,24 +16,24 @@ public partial class HephaistosContext : DbContext
     public virtual DbSet<Userdata> Userdatas { get; set; }
     public virtual DbSet<Lesson> Lessons { get; set; }
     public virtual DbSet<Student> Students { get; set; }
-    
 
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
-    base.OnModelCreating(modelBuilder);
 
-    // PickedLessons kapcsolatok
-    modelBuilder.Entity<PickedLessons>()
-        .HasOne(pl => pl.Student)
-        .WithMany(s => s.StudentLessons)
-        .HasForeignKey(pl => pl.StudentId);
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
 
-    modelBuilder.Entity<PickedLessons>()
-        .HasOne(pl => pl.Lesson)
-        .WithMany(l => l.PickedLessons)
-        .HasForeignKey(pl => pl.LessonId);
-}
+        // PickedLessons kapcsolatok
+        modelBuilder.Entity<PickedLessons>()
+            .HasOne(pl => pl.Student)
+            .WithMany(s => s.StudentLessons)
+            .HasForeignKey(pl => pl.StudentId);
 
+        modelBuilder.Entity<PickedLessons>()
+            .HasOne(pl => pl.Lesson)
+            .WithMany(l => l.PickedLessons)
+            .HasForeignKey(pl => pl.LessonId);
     }
+
+}
 
