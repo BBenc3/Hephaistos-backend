@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using ProjectHephaistos.Data;
 using ProjectHephaistos.Models;
 using System.Security.Cryptography;
@@ -8,33 +10,34 @@ public class AuthController : ControllerBase
 {
     private readonly HephaistosContext _context;
     private readonly JwtHelper _jwthelper;
+    private readonly UserManager<User> _userManager;
 
-    public AuthController(HephaistosContext context, JwtHelper jwtHelper)
+    public AuthController(HephaistosContext context, JwtHelper jwtHelper, UserManager<User> userManager)
     {
         _context = context;
         _jwthelper = jwtHelper;
+        _userManager = userManager;
     }
 
     [HttpPost("register")]
-    public IActionResult Register([FromBody] RegisterRequest request)
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
         if (_context.Users.Any(u => u.Email == request.Email))
             return BadRequest("Email already exists.");
 
-        var (passwordHash, passwordSalt) = HashPassword(request.Password);
-
         var user = new User
         {
-            Username = request.Username,
+            
             Email = request.Email,
-            PasswordHash = passwordHash,
-            PasswordSalt = passwordSalt,
             Role = "user",
-            Active = true,
+            Active = true
         };
 
-        _context.Users.Add(user);
-        _context.SaveChanges();
+        var result = await _userManager.CreateAsync(user, request.Password);
+        if (!result.Succeeded)
+        {
+            return BadRequest(result.Errors);
+        }
 
         return Ok("User registered successfully.");
     }
@@ -55,31 +58,25 @@ public class AuthController : ControllerBase
         if (computedHash != user.PasswordHash)
             return Unauthorized("Invalid credentials.");
 
-        // Generate an access token
         var accessToken = _jwthelper.GenerateToken(user.Id, user.Role);
-
-        // Generate a refresh token
         var refreshToken = GenerateRefreshToken();
         var refreshTokenEntity = new RefreshToken
         {
             Token = refreshToken,
-            Expiration = DateTime.UtcNow.AddDays(7), // 7 days validity
+            Expiration = DateTime.UtcNow.AddDays(7),
             UserId = user.Id
         };
 
         _context.RefreshTokens.Add(refreshTokenEntity);
         _context.SaveChanges();
 
-        // Return both access and refresh tokens
         return Ok(new
         {
             AccessToken = accessToken,
-            RefreshToken = refreshToken // Include refresh token in response
+            RefreshToken = refreshToken
         });
     }
 
-
-    // #warning Unused method
     [HttpPost("refreshToken")]
     public IActionResult RefreshToken([FromBody] string refreshToken)
     {
@@ -89,17 +86,13 @@ public class AuthController : ControllerBase
         if (tokenEntity == null)
             return Unauthorized("Invalid or expired refresh token.");
 
-        // Generálj új access tokent
         var accessToken = _jwthelper.GenerateToken(tokenEntity.UserId, tokenEntity.User.Role);
-
-        // (Opcionálisan) Generálj új refresh tokent
         var newRefreshToken = GenerateRefreshToken();
         tokenEntity.Token = newRefreshToken;
         tokenEntity.Expiration = DateTime.UtcNow.AddDays(7);
 
         _context.SaveChanges();
 
-        // Válasz vissza az új access és refresh tokennel
         return Ok(new
         {
             AccessToken = accessToken,
@@ -107,36 +100,21 @@ public class AuthController : ControllerBase
         });
     }
 
-    // #warning Unused method
     [HttpPost("logout")]
     public IActionResult Logout([FromBody] LogoutRequest request)
     {
         if (string.IsNullOrEmpty(request.RefreshToken))
             return BadRequest("Refresh token is required.");
 
-        // Ellenőrizd, hogy a refresh token érvényes-e
-        var storedToken = _context.RefreshTokens
-            .SingleOrDefault(rt => rt.Token == request.RefreshToken);
+        var storedToken = _context.RefreshTokens.SingleOrDefault(rt => rt.Token == request.RefreshToken);
 
         if (storedToken == null)
             return BadRequest("Invalid refresh token.");
 
-        // Eltávolítjuk a refresh tokent az adatbázisból
         _context.RefreshTokens.Remove(storedToken);
         _context.SaveChanges();
 
         return Ok("User logged out successfully.");
-    }
-
-
-    private (string, string) HashPassword(string password)
-    {
-        using (var hmac = new HMACSHA512())
-        {
-            var salt = hmac.Key;
-            var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return (Convert.ToBase64String(hash), Convert.ToBase64String(salt));
-        }
     }
 
     private (string, string) HashPasswordWithSalt(string password, string base64Salt)
@@ -148,6 +126,7 @@ public class AuthController : ControllerBase
             return (Convert.ToBase64String(hash), base64Salt);
         }
     }
+
     private string GenerateRefreshToken()
     {
         var randomNumber = new byte[32];
@@ -156,5 +135,30 @@ public class AuthController : ControllerBase
             rng.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);
         }
+    }
+
+    [HttpPut("change-password")]
+    [Authorize]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound("Felhasználó nem található.");
+        }
+
+        var passwordCheck = await _userManager.CheckPasswordAsync(user, request.OldPassword);
+        if (!passwordCheck)
+        {
+            return BadRequest("A megadott régi jelszó helytelen.");
+        }
+
+        var result = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
+        if (!result.Succeeded)
+        {
+            return BadRequest(result.Errors);
+        }
+
+        return Ok("Jelszó sikeresen módosítva.");
     }
 }
