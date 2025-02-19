@@ -6,17 +6,17 @@ using ProjectHephaistos.Models;
 using System.Security.Cryptography;
 using System.Text;
 
+[Route("[controller]")]
 public class AuthController : ControllerBase
 {
     private readonly HephaistosContext _context;
     private readonly JwtHelper _jwthelper;
     private readonly UserManager<User> _userManager;
 
-    public AuthController(HephaistosContext context, JwtHelper jwtHelper, UserManager<User> userManager)
+    public AuthController(HephaistosContext context, JwtHelper jwtHelper)
     {
         _context = context;
         _jwthelper = jwtHelper;
-        _userManager = userManager;
     }
 
     [HttpPost("register")]
