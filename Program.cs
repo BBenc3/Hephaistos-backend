@@ -6,7 +6,7 @@ using ProjectHephaistos.Data;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using ProjectHephaistos.Models; // Add this line to reference the User class
-
+using ProjectHephaistos.Services;
 
 namespace ProjectHephaistos
 {
@@ -108,6 +108,8 @@ namespace ProjectHephaistos
                 loggingBuilder.AddConsole();
                 loggingBuilder.AddDebug();
             });
+
+            builder.Services.AddScoped<OtpService>();
         }
 
         private static void ConfigurePipeline(WebApplication app)

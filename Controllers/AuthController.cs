@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using ProjectHephaistos.Data;
 using ProjectHephaistos.Models;
 using ProjectHephaistos.DTOs; // Add this line to reference the DTOs namespace
+using ProjectHephaistos.Services;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -24,13 +25,15 @@ namespace ProjectHephaistos.Controllers
         private readonly JwtHelper _jwthelper;
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly OtpService _otpService;
 
-        public AuthController(HephaistosContext context, JwtHelper jwtHelper, UserManager<User> userManager, IConfiguration configuration)
+        public AuthController(HephaistosContext context, JwtHelper jwtHelper, UserManager<User> userManager, IConfiguration configuration, OtpService otpService)
         {
             _context = context;
             _jwthelper = jwtHelper;
             _userManager = userManager;
             _configuration = configuration;
+            _otpService = otpService;
         }
 
         [HttpPost("register")]
@@ -93,8 +96,15 @@ namespace ProjectHephaistos.Controllers
                 return Unauthorized("Invalid token.");
             }
 
-            var storedToken = user.RefreshTokens.Single(x => x.Token == refreshToken);
-            if (!storedToken.IsActive)
+            var storedToken = user.RefreshTokens.SingleOrDefault(x => x.Token == refreshToken);
+            if (storedToken == null || !storedToken.IsActive)
+            {
+                return Unauthorized("Invalid token.");
+            }
+
+            // Check if the refresh token in the header matches the one in the database
+            var headerRefreshToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            if (headerRefreshToken != refreshToken)
             {
                 return Unauthorized("Invalid token.");
             }
@@ -158,31 +168,36 @@ namespace ProjectHephaistos.Controllers
                 return NotFound("User not found.");
             }
 
-            // Verify OTP (this is a placeholder, implement your OTP verification logic here)
-            if (!VerifyOtp(request.Email, request.Otp))
+            if (!_otpService.VerifyOtp(request.Email, request.Otp))
             {
                 return Unauthorized("Invalid OTP.");
             }
 
-            var result = await _userManager.RemovePasswordAsync(user);
-            if (!result.Succeeded)
+            try
             {
-                return BadRequest(result.Errors);
-            }
+                var result = await _userManager.RemovePasswordAsync(user);
+                if (!result.Succeeded)
+                {
+                    return BadRequest(result.Errors);
+                }
 
-            result = await _userManager.AddPasswordAsync(user, request.NewPassword);
-            if (!result.Succeeded)
+                result = await _userManager.AddPasswordAsync(user, request.NewPassword);
+                if (!result.Succeeded)
+                {
+                    return BadRequest(result.Errors);
+                }
+
+                return Ok("Password changed successfully.");
+            }
+            catch (Exception ex)
             {
-                return BadRequest(result.Errors);
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
-
-            return Ok("Password changed successfully.");
         }
 
         private bool VerifyOtp(string email, string otp)
         {
-            // Implement your OTP verification logic here
-            return true;
+            return _otpService.VerifyOtp(email, otp);
         }
 
         private void SetRefreshTokenCookie(string refreshToken)
