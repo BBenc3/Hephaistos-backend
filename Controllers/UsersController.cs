@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ProjectHephaistos.Data;
 using ProjectHephaistos.DTOs;
+using ProjectHephaistos.Models;
 
 namespace ProjectHephaistos.Controllers
 {
@@ -29,20 +30,18 @@ namespace ProjectHephaistos.Controllers
                 return Unauthorized("Invalid or expired token.");
             }
             var data = _context.Users.FirstOrDefault(c => c.Id == userId.Value);
-            ProfileRequest user = new ProfileRequest()
-            {
-                Username = data.Username,
-                Email = data.Email,
-                CreatedAt = data.CreatedAt.Date,
-                Role = data.Role,
-                Active = data.Active
-
-            };
-            if (user == null)
+            if (data == null)
             {
                 return NotFound("User not found.");
             }
-           
+            ProfileRequest user = new ProfileRequest()
+            {
+                Username = data.UserName,
+                Email = data.Email,
+                Created = data.Created.Date,
+                Role = data.Role,
+                Active = data.Active
+            };
             return Ok(user);
         }
 
@@ -61,7 +60,7 @@ namespace ProjectHephaistos.Controllers
                 return NotFound();
             }
 
-            user.Username = userDto.Username;
+            user.UserName = userDto.Username;
             user.Email = userDto.Email;
             _context.SaveChanges();
 
@@ -128,9 +127,5 @@ namespace ProjectHephaistos.Controllers
 
             return Ok();
         }
-
-        
-
-        
     }
 }

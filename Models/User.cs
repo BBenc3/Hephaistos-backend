@@ -1,28 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
+using System.Collections.Generic;
 
-namespace ProjectHephaistos.Models;
-
-public partial class User
+namespace ProjectHephaistos.Models
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
-
-    [Required]
-    public string? Username { get; set; }
-
-    [Required]
-    public string? Email { get; set; }
-
-    [Required]
-    public string? PasswordHash { get; set; }
-
-    public string? PasswordSalt { get; set; }
-
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-    public string? Role { get; set; } = "User";
-
-    public bool Active { get; set; }
+    public partial class User : IdentityUser<int>
+    {
+        public DateTime Created { get; set; } = DateTime.UtcNow; // Renamed property
+        public string Role { get; set; } = "User";
+        public bool Active { get; set; }
+        public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+    }
 }

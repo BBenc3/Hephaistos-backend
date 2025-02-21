@@ -4,6 +4,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ProjectHephaistos.Data;
 using System.Text;
+using Microsoft.AspNetCore.Identity;
+using ProjectHephaistos.Models; // Add this line to reference the User class
+
 
 namespace ProjectHephaistos
 {
@@ -65,6 +68,11 @@ namespace ProjectHephaistos
                 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
                 options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 27)));
             });
+
+            // Add ASP.NET Identity
+            builder.Services.AddIdentity<User, IdentityRole<int>>()
+                .AddEntityFrameworkStores<HephaistosContext>()
+                .AddDefaultTokenProviders();
 
             builder.Services.AddAuthentication(options =>
             {

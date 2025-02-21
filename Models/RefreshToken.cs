@@ -1,14 +1,20 @@
-namespace ProjectHephaistos.Models;
+using System;
 
-public partial class RefreshToken
+namespace ProjectHephaistos.Models
 {
-    public int Id { get; set; }
-    public string Token { get; set; }
-    public DateTime Expiration { get; set; }
-    public int UserId { get; set; }
-    public User User { get; set; }
+    public class RefreshToken
+    {
+        public int Id { get; set; }
+        public string Token { get; set; }
+        public DateTime Expires { get; set; }
+        public bool IsExpired => DateTime.UtcNow >= Expires;
+        public DateTime Created { get; set; }
+        public DateTime? Revoked { get; set; }
+        public bool IsActive => Revoked == null && !IsExpired;
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public int UserId { get; set; }
+        public User User { get; set; }
+    }
 }
 
 

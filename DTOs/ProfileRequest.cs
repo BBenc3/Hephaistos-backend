@@ -6,12 +6,9 @@
     public class ProfileRequest
     {
         public string? Username { get; set; }
-
         public string? Email { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
+        public DateTime Created { get; set; } // Updated property
         public string? Role { get; set; } = "User";
-
         public bool Active { get; set; }
     }
 }
