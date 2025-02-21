@@ -101,6 +101,13 @@ namespace ProjectHephaistos
                            .AllowAnyHeader()
                 )
             );
+
+            // Add logging service
+            builder.Services.AddLogging(loggingBuilder =>
+            {
+                loggingBuilder.AddConsole();
+                loggingBuilder.AddDebug();
+            });
         }
 
         private static void ConfigurePipeline(WebApplication app)
@@ -119,6 +126,15 @@ namespace ProjectHephaistos
             }
 
             app.UseCors();
+
+            // Use logging middleware
+            app.Use(async (context, next) =>
+            {
+                var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+                logger.LogInformation("Handling request: {RequestPath}", context.Request.Path);
+                await next.Invoke();
+                logger.LogInformation("Finished handling request.");
+            });
 
             app.UseAuthentication();
             app.UseAuthorization();

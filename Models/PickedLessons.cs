@@ -3,11 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ProjectHephaistos.Models
 {
-    public partial class PickedLessons
+    public partial class PickedLessons : BaseModel
     {
-        [Key]
-        public int Id { get; set; }
-
         // Külső kulcs a Student entitásra
         [ForeignKey("Student")]
         public int StudentId { get; set; }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ProjectHephaistos.Models
 {
-    public partial class User : IdentityUser<int>
+    public partial class User : BaseModel
     {
         public DateTime Created { get; set; } = DateTime.UtcNow; // Renamed property
         public string Role { get; set; } = "User";

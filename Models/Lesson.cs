@@ -2,11 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ProjectHephaistos.Models
 {
-    public partial class Lesson
+    public partial class Lesson : BaseModel
     {
-        [Key]
-        public int Id { get; set; }
-
         // A tanóra neve
         public string ClassName { get; set; }
 

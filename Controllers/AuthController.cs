@@ -41,7 +41,7 @@ namespace ProjectHephaistos.Controllers
 
             var user = new User
             {
-                UserName = request.Email,
+                UserName = request.Email, // Use UserName property from IdentityUser
                 Email = request.Email,
                 Role = "user",
                 Active = true
@@ -65,8 +65,8 @@ namespace ProjectHephaistos.Controllers
                 return Unauthorized("Invalid credentials.");
             }
 
-            var jwtToken = GenerateJwtToken(user);
-            var refreshToken = GenerateRefreshToken();
+            var jwtToken = _jwthelper.GenerateToken(user.Id, user.Role);
+            var refreshToken = _jwthelper.GenerateRefreshToken();
             user.RefreshTokens.Add(refreshToken);
             await _userManager.UpdateAsync(user);
 
@@ -99,12 +99,12 @@ namespace ProjectHephaistos.Controllers
                 return Unauthorized("Invalid token.");
             }
 
-            var newRefreshToken = GenerateRefreshToken();
+            var newRefreshToken = _jwthelper.GenerateRefreshToken();
             storedToken.Revoked = DateTime.UtcNow;
             user.RefreshTokens.Add(newRefreshToken);
             await _userManager.UpdateAsync(user);
 
-            var jwtToken = GenerateJwtToken(user);
+            var jwtToken = _jwthelper.GenerateToken(user.Id, user.Role);
             SetRefreshTokenCookie(newRefreshToken.Token);
 
             return Ok(new
@@ -149,38 +149,40 @@ namespace ProjectHephaistos.Controllers
             return Ok("Password changed successfully.");
         }
 
-        private string GenerateJwtToken(User user)
+        [HttpPut("change-password-after-otp")]
+        public async Task<IActionResult> ChangePasswordAfterOtp([FromBody] ChangePasswordAfterOtpRequest request)
         {
-            var jwtSettings = _configuration.GetSection("JwtSettings");
-            var secretKey = jwtSettings["SecretKey"];
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var claims = new[]
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user == null)
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role)
-            };
+                return NotFound("User not found.");
+            }
 
-            var token = new JwtSecurityToken(
-                issuer: jwtSettings["Issuer"],
-                audience: jwtSettings["Audience"],
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(30),
-                signingCredentials: creds);
+            // Verify OTP (this is a placeholder, implement your OTP verification logic here)
+            if (!VerifyOtp(request.Email, request.Otp))
+            {
+                return Unauthorized("Invalid OTP.");
+            }
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            var result = await _userManager.RemovePasswordAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            result = await _userManager.AddPasswordAsync(user, request.NewPassword);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            return Ok("Password changed successfully.");
         }
 
-        private RefreshToken GenerateRefreshToken()
+        private bool VerifyOtp(string email, string otp)
         {
-            return new RefreshToken
-            {
-                Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-                Expires = DateTime.UtcNow.AddDays(7),
-                Created = DateTime.UtcNow
-            };
+            // Implement your OTP verification logic here
+            return true;
         }
 
         private void SetRefreshTokenCookie(string refreshToken)

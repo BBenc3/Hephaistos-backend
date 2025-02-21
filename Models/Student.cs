@@ -2,10 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ProjectHephaistos.Models;
 
-public partial class Student
+public partial class Student : BaseModel
 {
-    [Key]
-    public int Id { get; set; }
     public string StudentNumber { get; set; }
     public Course Course { get; set; }
     public User User { get; set; }

@@ -2,10 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ProjectHephaistos.Models;
 
-public partial class Userdata
+public partial class Userdata : BaseModel
 {
-    [Key]
-    public int Id { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public DateTime BirthDate { get; set; }
