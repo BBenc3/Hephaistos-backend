@@ -5,7 +5,7 @@ using Microsoft.OpenApi.Models;
 using ProjectHephaistos.Data;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
-using ProjectHephaistos.Models; // Add this line to reference the User class
+using ProjectHephaistos.Models;
 using ProjectHephaistos.Services;
 
 namespace ProjectHephaistos
@@ -99,6 +99,7 @@ namespace ProjectHephaistos
                     builder.AllowAnyOrigin()
                            .AllowAnyMethod()
                            .AllowAnyHeader()
+                           .AllowCredentials()
                 )
             );
 
