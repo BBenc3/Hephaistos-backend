@@ -99,6 +99,7 @@ namespace ProjectHephaistos
                     builder.AllowAnyOrigin()
                            .AllowAnyMethod()
                            .AllowAnyHeader()
+                           .AllowCredentials()
                 )
             );
 
