@@ -2,21 +2,48 @@ namespace ProjectHephaistos.Services
 {
 	using System;
 	using System.Collections.Concurrent;
+	using System.Threading.Tasks;
+	using Microsoft.Extensions.Options;
 
 	public class OtpService
 	{
-		private static ConcurrentDictionary<string, string> _otpStore = new ConcurrentDictionary<string, string>();
+		private static ConcurrentDictionary<string, (string Otp, DateTime Expiry)> _otpStore = new ConcurrentDictionary<string, (string, DateTime)>();
+		private readonly EmailService _emailService;
+		private readonly EmailSettings _emailSettings;
 
-		public string GenerateOtp(string email)
+		public OtpService(EmailService emailService, IOptions<EmailSettings> emailSettings)
+		{
+			_emailService = emailService;
+			_emailSettings = emailSettings.Value;
+		}
+
+		public async Task<string> GenerateOtpAsync(string email)
 		{
 			var newOtp = new Random().Next(100000, 999999).ToString();
-			_otpStore[email] = newOtp;
+			var expiry = DateTime.UtcNow.AddMinutes(10); // OTP valid for 10 minutes
+			_otpStore[email] = (newOtp, expiry);
+
+			var subject = "Egyszeri hitelesítési kód";
+			var body = $"Az Ön egyszeri hitelesítési kódja: {newOtp}. A kód 10 percig érvényes. Ezzel a kóddal tudsz bejelentkezni.";
+
+			await _emailService.SendEmailAsync(
+				toEmail: email,
+				toName: email,
+				subject: subject,
+				body: body,
+				emailSettings: _emailSettings
+			);
 			return newOtp;
 		}
 
 		public bool VerifyOtp(string email, string otp)
 		{
-			return _otpStore.TryGetValue(email, out var storedOtp) && storedOtp == otp;
+			if (_otpStore.TryGetValue(email, out var storedOtp) && storedOtp.Otp == otp && storedOtp.Expiry > DateTime.UtcNow)
+			{
+				_otpStore.TryRemove(email, out _); // Invalidate OTP after use
+				return true;
+			}
+			return false;
 		}
 	}
 }

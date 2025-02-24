@@ -10,5 +10,6 @@
         public DateTime Created { get; set; } // Updated property
         public string? Role { get; set; } = "User";
         public bool Active { get; set; }
+        public string? ProfilePicturePath { get; set; }
     }
 }

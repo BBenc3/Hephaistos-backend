@@ -96,7 +96,7 @@ namespace ProjectHephaistos
 
             builder.Services.AddCors(options =>
                 options.AddDefaultPolicy(builder =>
-                    builder.AllowAnyOrigin()
+                    builder.WithOrigins("http://localhost:3000", "https://another-example.com")
                            .AllowAnyMethod()
                            .AllowAnyHeader()
                            .AllowCredentials()
@@ -110,12 +110,19 @@ namespace ProjectHephaistos
                 loggingBuilder.AddDebug();
             });
 
+            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+            builder.Services.AddScoped<EmailService>(); // Ensure EmailService is registered before OtpService
             builder.Services.AddScoped<OtpService>();
+            builder.Services.AddSingleton<IWebHostEnvironment>(builder.Environment);
+
+            builder.Services.Configure<FtpConfig>(builder.Configuration.GetSection("FtpConfig"));
+            builder.Services.AddScoped<FtpService>();
         }
 
         private static void ConfigurePipeline(WebApplication app)
         {
             app.UseHttpsRedirection();
+            app.UseStaticFiles(); // Add this line to serve static files
 
             if (app.Environment.IsDevelopment())
             {

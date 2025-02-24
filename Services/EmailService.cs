@@ -2,32 +2,48 @@
 using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using ProjectHephaistos.Models;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 
-public class EmailService
+namespace ProjectHephaistos.Services
 {
-    private readonly EmailSettings _emailSettings;
-
-    public EmailService(IOptions<EmailSettings> emailSettings)
+    public class EmailService
     {
-        _emailSettings = emailSettings.Value;
-    }
+        private readonly EmailSettings _emailSettings;
+        private readonly IWebHostEnvironment _env;
 
-    public async Task SendEmailAsync(string toEmail, string subject, string body)
-    {
-        var emailMessage = new MimeMessage();
-        emailMessage.From.Add(new MailboxAddress(_emailSettings.FromName, _emailSettings.FromAddress));
-        emailMessage.To.Add(new MailboxAddress("", toEmail));
-        emailMessage.Subject = subject;
-
-        var bodyBuilder = new BodyBuilder { HtmlBody = body };
-        emailMessage.Body = bodyBuilder.ToMessageBody();
-
-        using (var client = new SmtpClient())
+        public EmailService(IOptions<EmailSettings> emailSettings, IWebHostEnvironment env)
         {
-            await client.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.SmtpPort, SecureSocketOptions.StartTls);
-            await client.AuthenticateAsync(_emailSettings.Username, _emailSettings.Password);
-            await client.SendAsync(emailMessage);
-            await client.DisconnectAsync(true);
+            _emailSettings = emailSettings.Value;
+            _env = env;
+        }
+
+        public async Task SendEmailAsync(string toEmail, string toName, string subject, string body, EmailSettings emailSettings)
+        {
+            var emailMessage = new MimeMessage();
+            emailMessage.From.Add(new MailboxAddress(emailSettings.FromName, emailSettings.FromAddress));
+            emailMessage.To.Add(new MailboxAddress(toName, toEmail));
+            emailMessage.Subject = subject;
+
+            var bodyBuilder = new BodyBuilder
+            {
+                HtmlBody = body
+            };
+
+            // Build the path via the hosting environment
+           
+
+            emailMessage.Body = bodyBuilder.ToMessageBody();
+
+            using (var client = new SmtpClient())
+            {
+                await client.ConnectAsync(emailSettings.SmtpServer, emailSettings.SmtpPort, SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync(emailSettings.Username, emailSettings.Password);
+                await client.SendAsync(emailMessage);
+                await client.DisconnectAsync(true);
+            }
         }
     }
 }
@@ -40,4 +56,8 @@ public class EmailSettings
     public string Password { get; set; }
     public string FromAddress { get; set; }
     public string FromName { get; set; }
+    public string PrimaryColor { get; set; }
+    public string BackgroundColor { get; set; }
+    public string TextColor { get; set; }
+    public string BorderColor { get; set; }
 }

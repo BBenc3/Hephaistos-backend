@@ -26,14 +26,16 @@ namespace ProjectHephaistos.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _configuration;
         private readonly OtpService _otpService;
+        private readonly EmailService _emailService;
 
-        public AuthController(HephaistosContext context, JwtHelper jwtHelper, UserManager<User> userManager, IConfiguration configuration, OtpService otpService)
+        public AuthController(HephaistosContext context, JwtHelper jwtHelper, UserManager<User> userManager, IConfiguration configuration, OtpService otpService, EmailService emailService)
         {
             _context = context;
             _jwthelper = jwtHelper;
             _userManager = userManager;
             _configuration = configuration;
             _otpService = otpService;
+            _emailService = emailService;
         }
 
         [HttpPost("register")]
@@ -193,6 +195,38 @@ namespace ProjectHephaistos.Controllers
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
+        }
+
+
+        [HttpPost("generate-otp")]
+        public async Task<IActionResult> GenerateOtp([FromBody] OtpRequest request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user == null)
+            {
+                return BadRequest("Nincs regisztrált felhasználó ezzel az email címmel.");
+            }
+
+            var otp = await _otpService.GenerateOtpAsync(request.Email);
+            var emailSettings = _configuration.GetSection("EmailSettings").Get<EmailSettings>();
+            var subject = "Egyszeri hitelesítési kód";
+            var body = $@"
+                <html>
+                <body style='font-family: Arial, sans-serif; background-color: {emailSettings.BackgroundColor}; color: {emailSettings.TextColor};'>
+                    <div style='max-width: 600px; margin: auto; padding: 20px; border: 1px solid {emailSettings.BorderColor}; border-radius: 10px;'>
+                        <h2 style='color: {emailSettings.PrimaryColor};'>Egyszeri hitelesítési kód</h2>
+                        <p>Kedves {user.UserName},</p>
+                        <p>Az egyszeri hitelesítési kódod:</p>
+                        <p style='font-size: 24px; font-weight: bold; color: {emailSettings.PrimaryColor};'>{otp}</p>
+                        <p>Kérjük, használd ezt a kódot a hitelesítéshez.</p>
+                        <p>Üdvözlettel,<br/>Team Hephaistos</p>
+                        <p style='font-size: 12px; color: {emailSettings.TextColor};'>Kérem ne válaszoljon erre az emailre, ez egy automatikusan generált üzenet.</p>
+                    </div>
+                </body>
+                </html>";
+
+            await _emailService.SendEmailAsync(user.Email, user.UserName, subject, body, emailSettings);
+            return Ok();
         }
 
         private bool VerifyOtp(string email, string otp)
