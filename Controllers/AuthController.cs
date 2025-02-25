@@ -42,11 +42,11 @@ namespace ProjectHephaistos.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
             if (await _userManager.FindByEmailAsync(request.Email) != null)
-                return BadRequest("Email already exists.");
+                return BadRequest(new { message = "Email already exists." });
 
             var user = new User
             {
-                UserName = request.Email, // Use UserName property from IdentityUser
+                UserName = request.Email,
                 Email = request.Email,
                 Role = "user",
                 Active = true
@@ -55,6 +55,10 @@ namespace ProjectHephaistos.Controllers
             var result = await _userManager.CreateAsync(user, request.Password);
             if (!result.Succeeded)
             {
+                if (result.Errors.Any(e => e.Code == "PasswordTooWeak"))
+                {
+                    return BadRequest(new { message = "Password is too weak" });
+                }
                 return BadRequest(result.Errors);
             }
 
