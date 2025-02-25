@@ -10,6 +10,6 @@ namespace ProjectHephaistos.Models
         public string Role { get; set; } = "User";
         public bool Active { get; set; }
         public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
-        public string ProfilePicturePath { get; set; }
+        public string? ProfilePicturePath { get; set; } = null;
     }
 }

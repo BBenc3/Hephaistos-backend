@@ -12,8 +12,8 @@ using ProjectHephaistos.Data;
 namespace ProjectHephaistos.Migrations
 {
     [DbContext(typeof(HephaistosContext))]
-    [Migration("20250221164252_usersFix")]
-    partial class usersFix
+    [Migration("20250224114101_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -394,6 +394,9 @@ namespace ProjectHephaistos.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("ProfilePicturePath")
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Role")
                         .IsRequired()

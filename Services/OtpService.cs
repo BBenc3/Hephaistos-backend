@@ -23,16 +23,7 @@ namespace ProjectHephaistos.Services
 			var expiry = DateTime.UtcNow.AddMinutes(10); // OTP valid for 10 minutes
 			_otpStore[email] = (newOtp, expiry);
 
-			var subject = "Egyszeri hitelesítési kód";
-			var body = $"Az Ön egyszeri hitelesítési kódja: {newOtp}. A kód 10 percig érvényes. Ezzel a kóddal tudsz bejelentkezni.";
-
-			await _emailService.SendEmailAsync(
-				toEmail: email,
-				toName: email,
-				subject: subject,
-				body: body,
-				emailSettings: _emailSettings
-			);
+			
 			return newOtp;
 		}
 

@@ -393,7 +393,6 @@ namespace ProjectHephaistos.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("ProfilePicturePath")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Role")
