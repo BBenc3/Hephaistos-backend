@@ -96,7 +96,7 @@ namespace ProjectHephaistos
 
             builder.Services.AddCors(options =>
                 options.AddDefaultPolicy(builder =>
-                    builder.WithOrigins("http://localhost:3000", "https://another-example.com")
+                    builder.WithOrigins("http://localhost:3000", "http://localhost:3001")
                            .AllowAnyMethod()
                            .AllowAnyHeader()
                            .AllowCredentials()

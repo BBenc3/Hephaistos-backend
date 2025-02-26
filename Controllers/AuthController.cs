@@ -66,27 +66,29 @@ namespace ProjectHephaistos.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
-            var user = await _userManager.FindByEmailAsync(loginDto.Email);
-            if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password))
+            var user = await _userManager.FindByEmailAsync(loginRequest.Email);
+            if (user == null || !await _userManager.CheckPasswordAsync(user, loginRequest.Password))
             {
                 return Unauthorized("Invalid credentials.");
             }
 
             var jwtToken = _jwthelper.GenerateToken(user.Id, user.Role);
-            var refreshToken = _jwthelper.GenerateRefreshToken();
-            user.RefreshTokens.Add(refreshToken);
-            await _userManager.UpdateAsync(user);
-
-            SetRefreshTokenCookie(refreshToken.Token);
+            if (loginRequest.StayLoggedIn)
+            {
+                var refreshToken = _jwthelper.GenerateRefreshToken();
+                user.RefreshTokens.Add(refreshToken);
+                await _userManager.UpdateAsync(user);
+                SetRefreshTokenCookie(refreshToken.Token);
+            }
 
             return Ok(new
             {
                 Token = jwtToken
             });
         }
-        //not working
+
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken()
         {
@@ -104,13 +106,6 @@ namespace ProjectHephaistos.Controllers
 
             var storedToken = user.RefreshTokens.SingleOrDefault(x => x.Token == refreshToken);
             if (storedToken == null || !storedToken.IsActive)
-            {
-                return Unauthorized("Invalid token.");
-            }
-
-            // Check if the refresh token in the header matches the one in the database
-            var headerRefreshToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            if (headerRefreshToken != refreshToken)
             {
                 return Unauthorized("Invalid token.");
             }
