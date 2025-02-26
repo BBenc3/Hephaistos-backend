@@ -32,8 +32,7 @@ namespace ProjectHephaistos.Services
                 HtmlBody = body
             };
 
-            // Build the path via the hosting environment
-           
+
 
             emailMessage.Body = bodyBuilder.ToMessageBody();
 

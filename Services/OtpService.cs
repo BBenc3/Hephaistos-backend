@@ -8,14 +8,9 @@ namespace ProjectHephaistos.Services
 	public class OtpService
 	{
 		private static ConcurrentDictionary<string, (string Otp, DateTime Expiry)> _otpStore = new ConcurrentDictionary<string, (string, DateTime)>();
-		private readonly EmailService _emailService;
-		private readonly EmailSettings _emailSettings;
 
-		public OtpService(EmailService emailService, IOptions<EmailSettings> emailSettings)
-		{
-			_emailService = emailService;
-			_emailSettings = emailSettings.Value;
-		}
+		public OtpService()
+		{ }
 
 		public async Task<string> GenerateOtpAsync(string email)
 		{
@@ -23,7 +18,6 @@ namespace ProjectHephaistos.Services
 			var expiry = DateTime.UtcNow.AddMinutes(10); // OTP valid for 10 minutes
 			_otpStore[email] = (newOtp, expiry);
 
-			
 			return newOtp;
 		}
 

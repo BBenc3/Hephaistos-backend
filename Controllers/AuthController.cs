@@ -233,11 +233,6 @@ namespace ProjectHephaistos.Controllers
             return Ok();
         }
 
-        private bool VerifyOtp(string email, string otp)
-        {
-            return _otpService.VerifyOtp(email, otp);
-        }
-
         private void SetRefreshTokenCookie(string refreshToken)
         {
             var cookieOptions = new CookieOptions
