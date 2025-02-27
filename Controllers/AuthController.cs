@@ -74,25 +74,32 @@ namespace ProjectHephaistos.Controllers
                 return Unauthorized("Invalid credentials.");
             }
 
+            if (!user.Active)
+            {
+                return Unauthorized("Inactive user. Contact admin.");
+            }
+
             var jwtToken = _jwthelper.GenerateToken(user.Id, user.Role);
+
             if (loginRequest.StayLoggedIn)
             {
                 var refreshToken = _jwthelper.GenerateRefreshToken();
                 user.RefreshTokens.Add(refreshToken);
                 await _userManager.UpdateAsync(user);
                 SetRefreshTokenCookie(refreshToken.Token);
+                return Ok(new
+                {
+                    Token = jwtToken,
+                    RefreshToken = refreshToken.Token
+                });
             }
 
-            return Ok(new
-            {
-                Token = jwtToken
-            });
+            return Ok(new { Token = jwtToken });
         }
 
         [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshToken()
+        public async Task<IActionResult> RefreshToken([FromHeader(Name = "refreshToken")] string refreshToken)
         {
-            var refreshToken = Request.Cookies["refreshToken"];
             if (string.IsNullOrEmpty(refreshToken))
             {
                 return Unauthorized("Refresh token is missing.");
@@ -120,7 +127,8 @@ namespace ProjectHephaistos.Controllers
 
             return Ok(new
             {
-                Token = jwtToken
+                Token = jwtToken,
+                RefreshToken = newRefreshToken.Token
             });
         }
 
@@ -226,6 +234,24 @@ namespace ProjectHephaistos.Controllers
 
             await _emailService.SendEmailAsync(user.Email, user.UserName, subject, body, emailSettings);
             return Ok();
+        }
+
+        [HttpPost("validate-token")]
+        public IActionResult ValidateToken([FromBody] TokenValidationRequest request)
+        {
+            var userId = _jwthelper.ExtractUserIdFromToken(request.Token);
+            if (userId == null)
+            {
+                return Unauthorized("Invalid token.");
+            }
+
+            var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
+            if (user == null)
+            {
+                return Unauthorized("User not found.");
+            }
+
+            return Ok(new { userId = user.Id, userName = user.UserName });
         }
 
         private void SetRefreshTokenCookie(string refreshToken)
