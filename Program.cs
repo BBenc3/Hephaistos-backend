@@ -66,7 +66,12 @@ namespace ProjectHephaistos
             builder.Services.AddDbContext<HephaistosContext>(options =>
             {
                 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-                options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 27)));
+                options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 27)),
+                    mySqlOptions =>
+                    {
+                        mySqlOptions.EnableRetryOnFailure(); // Enable retry on failure
+                        mySqlOptions.CommandTimeout(180); // Increase command timeout to 180 seconds
+                    });
             });
 
             // Add ASP.NET Identity
