@@ -46,7 +46,7 @@ namespace ProjectHephaistos.Controllers
 
             var user = new User
             {
-                UserName = request.Email,
+                UserName = request.Username,
                 Email = request.Email,
                 Role = "user",
                 Active = true
