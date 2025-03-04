@@ -86,7 +86,7 @@ namespace ProjectHephaistos.Controllers
                 var refreshToken = _jwthelper.GenerateRefreshToken();
                 user.RefreshTokens.Add(refreshToken);
                 await _userManager.UpdateAsync(user);
-                SetRefreshTokenCookie(refreshToken.Token);
+                
                 return Ok(new
                 {
                     Token = jwtToken,
