@@ -86,50 +86,21 @@ namespace ProjectHephaistos.Controllers
                 var refreshToken = _jwthelper.GenerateRefreshToken();
                 user.RefreshTokens.Add(refreshToken);
                 await _userManager.UpdateAsync(user);
-                
+
                 return Ok(new
                 {
-                    Token = jwtToken,
+                    AccessToken = jwtToken,
                     RefreshToken = refreshToken.Token
                 });
             }
 
-            return Ok(new { Token = jwtToken });
+            return Ok(new { AccessToken = jwtToken });
         }
 
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken([FromHeader(Name = "refreshToken")] string refreshToken)
         {
-            if (string.IsNullOrEmpty(refreshToken))
-            {
-                return Unauthorized("Refresh token is missing.");
-            }
-
-            var user = _userManager.Users.SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == refreshToken));
-            if (user == null)
-            {
-                return Unauthorized("Invalid token.");
-            }
-
-            var storedToken = user.RefreshTokens.SingleOrDefault(x => x.Token == refreshToken);
-            if (storedToken == null || !storedToken.IsActive)
-            {
-                return Unauthorized("Invalid token.");
-            }
-
-            var newRefreshToken = _jwthelper.GenerateRefreshToken();
-            storedToken.Revoked = DateTime.UtcNow;
-            user.RefreshTokens.Add(newRefreshToken);
-            await _userManager.UpdateAsync(user);
-
-            var jwtToken = _jwthelper.GenerateToken(user.Id, user.Role);
-            SetRefreshTokenCookie(newRefreshToken.Token);
-
-            return Ok(new
-            {
-                Token = jwtToken,
-                RefreshToken = newRefreshToken.Token
-            });
+            return NotFound("Not implemented yet.");
         }
 
         [HttpPost("logout")]
