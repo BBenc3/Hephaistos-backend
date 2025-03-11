@@ -27,8 +27,9 @@ namespace ProjectHephaistos.Controllers
         private readonly IConfiguration _configuration;
         private readonly OtpService _otpService;
         private readonly EmailService _emailService;
+        private readonly FtpService _ftpService;
 
-        public AuthController(HephaistosContext context, JwtHelper jwtHelper, UserManager<User> userManager, IConfiguration configuration, OtpService otpService, EmailService emailService)
+        public AuthController(HephaistosContext context, JwtHelper jwtHelper, UserManager<User> userManager, IConfiguration configuration, OtpService otpService, EmailService emailService, FtpService ftpService)
         {
             _context = context;
             _jwthelper = jwtHelper;
@@ -36,6 +37,7 @@ namespace ProjectHephaistos.Controllers
             _configuration = configuration;
             _otpService = otpService;
             _emailService = emailService;
+            _ftpService = ftpService;
         }
 
         [HttpPost("register")]

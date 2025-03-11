@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using ProjectHephaistos.Data;
 using ProjectHephaistos.DTOs;
 using ProjectHephaistos.Models;
+using ProjectHephaistos.Services;
 
 namespace ProjectHephaistos.Controllers
 {
@@ -14,11 +16,13 @@ namespace ProjectHephaistos.Controllers
     {
         private readonly HephaistosContext _context;
         private readonly JwtHelper _jwtHelper;
+        private readonly FtpService _ftpService;
 
-        public UsersController(HephaistosContext context, JwtHelper jwtHelper)
+        public UsersController(HephaistosContext context, JwtHelper jwtHelper, FtpService ftpService)
         {
             _context = context;
             _jwtHelper = jwtHelper;
+            _ftpService = ftpService;
         }
 
         [HttpGet("me")]
@@ -86,6 +90,41 @@ namespace ProjectHephaistos.Controllers
             _context.SaveChanges();
 
             return Ok();
+        }
+
+        [HttpPost("me/profile-picture")]
+        public IActionResult UploadProfilePicture([FromHeader(Name = "Authorization")] string authorization, IFormFile file)
+        {
+            var userId = _jwtHelper.ExtractUserIdFromToken(authorization);
+            if (!userId.HasValue)
+            {
+                return Unauthorized();
+            }
+
+            var user = _context.Users.FirstOrDefault(c => c.Id == userId.Value);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file uploaded.");
+            }
+
+            var fileName = $"{userId.Value}_{file.FileName}";
+            var filePath = Path.GetTempFileName();
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                file.CopyTo(stream);
+            }
+
+            _ftpService.UploadFile(filePath, fileName);
+            user.ProfilePicturePath = fileName;
+            _context.SaveChanges();
+
+            return Ok(new { ProfilePicturePath = fileName });
         }
 
         [Authorize(Roles = "Admin")]
