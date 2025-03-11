@@ -54,6 +54,14 @@ namespace ProjectHephaistos.Controllers
                 Active = true
             };
 
+            var userData = new Userdata
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                BirthDate = request.BirthDate,
+                User = user
+            };
+
             var result = await _userManager.CreateAsync(user, request.Password);
             if (!result.Succeeded)
             {
