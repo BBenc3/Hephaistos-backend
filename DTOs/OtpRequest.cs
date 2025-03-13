@@ -1,7 +1,7 @@
-namespace ProjectHephaistos.DTOs
+﻿namespace ProjectHephaistos.DTOs
 {
     public class OtpRequest
     {
-        public string Email { get; set; }
+        public string Email { get; set; } = null!;
     }
 }

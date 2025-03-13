@@ -1,15 +1,13 @@
-using ProjectHephaistos.Models;
+﻿using ProjectHephaistos.Models;
 
-public class RegisterRequest
+namespace ProjectHephaistos.DTOs
 {
-    public string Username { get; set; }
-    public string Email { get; set; }
-    public string Password { get; set; }
-    public string University { get; set; }
-    public string Major { get; set; }
-    public List<string> PassedLesson { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public DateTime BirthDate { get; set; }
-
+    public class RegisterRequest
+    {
+        public string Username { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public int StartYear { get; set; }
+        public int MajorId { get; set; }
+    }
 }

@@ -35,7 +35,12 @@ namespace ProjectHephaistos
                 throw new ArgumentNullException(nameof(secretKey), "JWT SecretKey cannot be null or empty.");
             }
 
-            builder.Services.AddSingleton<JwtHelper>();
+            builder.Services.AddSingleton<JwtHelper>(provider =>
+            {
+                var configuration = provider.GetRequiredService<IConfiguration>();
+                return new JwtHelper(configuration);
+            });
+
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -66,18 +71,9 @@ namespace ProjectHephaistos
             builder.Services.AddDbContext<HephaistosContext>(options =>
             {
                 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-                options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 27)),
-                    mySqlOptions =>
-                    {
-                        mySqlOptions.EnableRetryOnFailure(); // Enable retry on failure
-                        mySqlOptions.CommandTimeout(180); // Increase command timeout to 180 seconds
-                    });
+               ;
             });
 
-            // Add ASP.NET Identity
-            builder.Services.AddIdentity<User, IdentityRole<int>>()
-                .AddEntityFrameworkStores<HephaistosContext>()
-                .AddDefaultTokenProviders();
 
             builder.Services.AddAuthentication(options =>
             {

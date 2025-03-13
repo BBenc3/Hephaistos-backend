@@ -49,7 +49,10 @@ public class JwtHelper
             new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
             new Claim(ClaimTypes.Role, role),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString(), ClaimValueTypes.Integer64)
+            new Claim(JwtRegisteredClaimNames.Iat,
+          ((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds().ToString(),
+          ClaimValueTypes.Integer64)
+
         };
 
         var tokenDescriptor = new SecurityTokenDescriptor
@@ -69,13 +72,20 @@ public class JwtHelper
 
     public RefreshToken GenerateRefreshToken()
     {
+        var randomBytes = new byte[32]; // 32 bájt = 256 bit biztonsági szint
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(randomBytes);
+        }
+
         return new RefreshToken
         {
-            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+            Token = Convert.ToBase64String(randomBytes),
             Expires = DateTime.UtcNow.AddDays(7),
             Created = DateTime.UtcNow
         };
     }
+
 
     /// <summary>
     /// Extracts the user ID from the token.
