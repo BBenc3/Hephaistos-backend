@@ -11,7 +11,7 @@ public partial class Major
 
     public int? UniversityId { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     public bool? Active { get; set; }
 
@@ -21,5 +21,5 @@ public partial class Major
 
     public virtual University? University { get; set; }
 
-    public virtual ICollection<UserMajor> UserMajors { get; set; } = new List<UserMajor>();
+    public virtual ICollection<User> Users { get; set; } = new List<User>();
 }

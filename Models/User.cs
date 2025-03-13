@@ -11,23 +11,29 @@ public partial class User
 
     public string? PasswordHash { get; set; }
 
-    public string? PasswordSalt { get; set; }
-
     public string? Role { get; set; }
 
     public string? Email { get; set; }
 
     public int? StartYear { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     public bool? Active { get; set; }
 
     public string? Note { get; set; }
 
-    public virtual ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
+    public int? MajorId { get; set; }
 
-    public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+    public string? ProfilePicturepath { get; set; }
 
-    public virtual ICollection<UserMajor> UserMajors { get; set; } = new List<UserMajor>();
+    public string? Status { get; set; }
+
+    public virtual ICollection<Auditlog> Auditlogs { get; set; } = new List<Auditlog>();
+
+    public virtual ICollection<Completedsubject> Completedsubjects { get; set; } = new List<Completedsubject>();
+
+    public virtual Major? Major { get; set; }
+
+    public virtual ICollection<Refreshtoken> Refreshtokens { get; set; } = new List<Refreshtoken>();
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ProjectHephaistos.Models;
 
-public partial class AuditLog
+public partial class Auditlog
 {
     public int Id { get; set; }
 
@@ -15,7 +15,7 @@ public partial class AuditLog
 
     public string? ChangedData { get; set; }
 
-    public DateTime? ChangedAt { get; set; }
+    public DateTime ChangedAt { get; set; }
 
     public int? ChangedBy { get; set; }
 

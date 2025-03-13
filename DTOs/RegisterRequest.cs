@@ -1,6 +1,4 @@
-﻿using ProjectHephaistos.Models;
-
-namespace ProjectHephaistos.DTOs
+﻿namespace ProjectHephaistos.DTOs
 {
     public class RegisterRequest
     {

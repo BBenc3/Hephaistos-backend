@@ -70,21 +70,6 @@ public class JwtHelper
         return tokenHandler.WriteToken(token);
     }
 
-    public RefreshToken GenerateRefreshToken()
-    {
-        var randomBytes = new byte[32]; // 32 bájt = 256 bit biztonsági szint
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(randomBytes);
-        }
-
-        return new RefreshToken
-        {
-            Token = Convert.ToBase64String(randomBytes),
-            Expires = DateTime.UtcNow.AddDays(7),
-            Created = DateTime.UtcNow
-        };
-    }
 
 
     /// <summary>
@@ -147,5 +132,15 @@ public class JwtHelper
         {
             return false;
         }
+    }
+
+    public string GenerateRefreshToken()
+    {
+        var randomBytes = new byte[32];
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(randomBytes);
+        }
+        return Convert.ToBase64String(randomBytes);
     }
 }

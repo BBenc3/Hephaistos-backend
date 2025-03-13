@@ -11,7 +11,7 @@ public partial class University
 
     public string? Place { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     public bool? Active { get; set; }
 

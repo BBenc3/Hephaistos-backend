@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ProjectHephaistos.Models;
 
-public partial class RefreshToken
+public partial class Refreshtoken
 {
     public int Id { get; set; }
 
@@ -17,7 +17,7 @@ public partial class RefreshToken
 
     public int? UserId { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     public bool? Active { get; set; }
 

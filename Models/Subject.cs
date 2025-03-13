@@ -19,13 +19,15 @@ public partial class Subject
 
     public bool? IsEvenSemester { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     public bool? Active { get; set; }
 
     public string? Note { get; set; }
 
-    public virtual ICollection<ClassSchedule> ClassSchedules { get; set; } = new List<ClassSchedule>();
+    public virtual ICollection<Classschedule> Classschedules { get; set; } = new List<Classschedule>();
+
+    public virtual ICollection<Completedsubject> Completedsubjects { get; set; } = new List<Completedsubject>();
 
     public virtual Major? Major { get; set; }
 }

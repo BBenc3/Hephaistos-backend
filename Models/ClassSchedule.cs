@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ProjectHephaistos.Models;
 
-public partial class ClassSchedule
+public partial class Classschedule
 {
     public int Id { get; set; }
 
@@ -17,7 +17,9 @@ public partial class ClassSchedule
 
     public TimeOnly? EndTime { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
+
+    public bool? Active { get; set; }
 
     public virtual Subject? Subject { get; set; }
 }

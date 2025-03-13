@@ -3,10 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ProjectHephaistos.Data;
-using System.Text;
-using Microsoft.AspNetCore.Identity;
-using ProjectHephaistos.Models;
 using ProjectHephaistos.Services;
+using System.Text;
 
 namespace ProjectHephaistos
 {
@@ -71,7 +69,7 @@ namespace ProjectHephaistos
             builder.Services.AddDbContext<HephaistosContext>(options =>
             {
                 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-               ;
+                ;
             });
 
 
