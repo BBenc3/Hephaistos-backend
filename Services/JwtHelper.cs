@@ -49,7 +49,10 @@ public class JwtHelper
             new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
             new Claim(ClaimTypes.Role, role),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString(), ClaimValueTypes.Integer64)
+            new Claim(JwtRegisteredClaimNames.Iat,
+          ((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds().ToString(),
+          ClaimValueTypes.Integer64)
+
         };
 
         var tokenDescriptor = new SecurityTokenDescriptor
@@ -67,15 +70,7 @@ public class JwtHelper
         return tokenHandler.WriteToken(token);
     }
 
-    public RefreshToken GenerateRefreshToken()
-    {
-        return new RefreshToken
-        {
-            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-            Expires = DateTime.UtcNow.AddDays(7),
-            Created = DateTime.UtcNow
-        };
-    }
+
 
     /// <summary>
     /// Extracts the user ID from the token.
@@ -137,5 +132,15 @@ public class JwtHelper
         {
             return false;
         }
+    }
+
+    public string GenerateRefreshToken()
+    {
+        var randomBytes = new byte[32];
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(randomBytes);
+        }
+        return Convert.ToBase64String(randomBytes);
     }
 }

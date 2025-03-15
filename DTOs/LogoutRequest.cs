@@ -1,4 +1,7 @@
-public class LogoutRequest
+﻿namespace ProjectHephaistos.DTOs
 {
-    public string RefreshToken { get; set; }
+    public class LogoutRequest
+    {
+        public string RefreshToken { get; set; } = null!;
+    }
 }
