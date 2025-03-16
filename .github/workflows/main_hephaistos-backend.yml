@@ -30,7 +30,7 @@ jobs:
         run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
       - name: Update database
-        run: dotnet ef database update
+        run: dotnet ef database update --connection "Server=tcp:hephaistos-provider.database.windows.net,1433;Initial Catalog=hephaistos;Persist Security Info=False;User ID=hephaistos;Password=Admin@2025;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
