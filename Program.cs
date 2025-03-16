@@ -67,15 +67,15 @@ namespace ProjectHephaistos
          });
 
 
-          builder.Services.AddDbContext<HephaistosContext>(options =>
-{
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    if (string.IsNullOrEmpty(connectionString))
-    {
-        throw new InvalidOperationException("Connection string 'DefaultConnection' is not set.");
-    }
-    options.UseSqlServer(connectionString);
-});
+            builder.Services.AddDbContext<HephaistosContext>(options =>
+  {
+      var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+      if (string.IsNullOrEmpty(connectionString))
+      {
+          throw new InvalidOperationException("Connection string 'DefaultConnection' is not set.");
+      }
+      options.UseSqlServer(connectionString);
+  });
 
 
 
@@ -101,10 +101,9 @@ namespace ProjectHephaistos
 
             builder.Services.AddCors(options =>
                 options.AddDefaultPolicy(builder =>
-                    builder.WithOrigins("http://localhost:3000", "http://localhost:3001")
+                    builder.AllowAnyOrigin()
                            .AllowAnyMethod()
                            .AllowAnyHeader()
-                           .AllowCredentials()
                 )
             );
 
