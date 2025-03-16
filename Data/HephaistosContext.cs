@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
 using ProjectHephaistos.Models;
 
 namespace ProjectHephaistos.Data;
@@ -39,31 +38,39 @@ public partial class HephaistosContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySql("server=localhost;database=hephaistos;user=root", Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.4.32-mariadb"));
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            optionsBuilder.UseSqlServer(connectionString);
+        }
+    }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder
-            .UseCollation("utf8mb4_general_ci")
-            .HasCharSet("utf8mb4");
-
+        modelBuilder.HasAnnotation("Relational:Collation", "utf8mb4_general_ci");
         modelBuilder.Entity<Auditlog>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id).HasName("PK_Auditlog");
 
             entity.ToTable("auditlog");
 
             entity.HasIndex(e => e.ChangedBy, "ChangedBy");
 
-            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.Id).HasColumnType("int");
             entity.Property(e => e.ChangedAt)
                 .HasDefaultValueSql("current_timestamp()")
                 .HasColumnType("timestamp");
-            entity.Property(e => e.ChangedBy).HasColumnType("int(11)");
+            entity.Property(e => e.ChangedBy).HasColumnType("int");
             entity.Property(e => e.ChangedData).HasColumnType("json");
-            entity.Property(e => e.OperationType).HasColumnType("enum('INSERT','UPDATE','DELETE')");
-            entity.Property(e => e.RecordId).HasColumnType("int(11)");
+            entity.Property(e => e.OperationType).HasMaxLength(50); // Changed from enum to string
+            entity.Property(e => e.RecordId).HasColumnType("int");
             entity.Property(e => e.TableName).HasMaxLength(255);
 
             entity.HasOne(d => d.ChangedByNavigation).WithMany(p => p.Auditlogs)
@@ -74,13 +81,13 @@ public partial class HephaistosContext : DbContext
 
         modelBuilder.Entity<Classschedule>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id).HasName("PK_Classschedule");
 
             entity.ToTable("classschedules");
 
             entity.HasIndex(e => e.SubjectId, "SubjectId");
 
-            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.Id).HasColumnType("int");
             entity.Property(e => e.Active)
                 .HasDefaultValueSql("'1'")
                 .HasColumnName("active");
@@ -90,8 +97,8 @@ public partial class HephaistosContext : DbContext
             entity.Property(e => e.DayOfWeek).HasMaxLength(20);
             entity.Property(e => e.EndTime).HasColumnType("time");
             entity.Property(e => e.StartTime).HasColumnType("time");
-            entity.Property(e => e.SubjectId).HasColumnType("int(11)");
-            entity.Property(e => e.Year).HasColumnType("int(11)");
+            entity.Property(e => e.SubjectId).HasColumnType("int");
+            entity.Property(e => e.Year).HasColumnType("int");
 
             entity.HasOne(d => d.Subject).WithMany(p => p.Classschedules)
                 .HasForeignKey(d => d.SubjectId)
@@ -101,7 +108,7 @@ public partial class HephaistosContext : DbContext
 
         modelBuilder.Entity<Completedsubject>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id).HasName("PK_Completedsubject");
 
             entity.ToTable("completedsubjects");
 
@@ -109,12 +116,12 @@ public partial class HephaistosContext : DbContext
 
             entity.HasIndex(e => e.UserId, "UserId");
 
-            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.Id).HasColumnType("int");
             entity.Property(e => e.Active)
                 .HasDefaultValueSql("'1'")
                 .HasColumnName("active");
-            entity.Property(e => e.SubjectId).HasColumnType("int(11)");
-            entity.Property(e => e.UserId).HasColumnType("int(11)");
+            entity.Property(e => e.SubjectId).HasColumnType("int");
+            entity.Property(e => e.UserId).HasColumnType("int");
 
             entity.HasOne(d => d.Subject).WithMany(p => p.Completedsubjects)
                 .HasForeignKey(d => d.SubjectId)
@@ -127,31 +134,31 @@ public partial class HephaistosContext : DbContext
 
         modelBuilder.Entity<Course>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id).HasName("PK_Course");
 
             entity.ToTable("course");
 
-            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.Id).HasColumnType("int");
             entity.Property(e => e.CreatedAt).HasMaxLength(6);
         });
 
 
         modelBuilder.Entity<Major>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id).HasName("PK_Major");
 
             entity.ToTable("majors");
 
             entity.HasIndex(e => e.UniversityId, "UniversityId");
 
-            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.Id).HasColumnType("int");
             entity.Property(e => e.Active).HasDefaultValueSql("'1'");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("current_timestamp()")
                 .HasColumnType("timestamp");
             entity.Property(e => e.Name).HasMaxLength(255);
             entity.Property(e => e.Note).HasColumnType("text");
-            entity.Property(e => e.UniversityId).HasColumnType("int(11)");
+            entity.Property(e => e.UniversityId).HasColumnType("int");
 
             entity.HasOne(d => d.University).WithMany(p => p.Majors)
                 .HasForeignKey(d => d.UniversityId)
@@ -160,13 +167,13 @@ public partial class HephaistosContext : DbContext
 
         modelBuilder.Entity<Refreshtoken>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id).HasName("PK_Refreshtoken");
 
             entity.ToTable("refreshtokens");
 
             entity.HasIndex(e => e.UserId, "UserId");
 
-            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.Id).HasColumnType("int");
             entity.Property(e => e.Active).HasDefaultValueSql("'1'");
             entity.Property(e => e.Created).HasMaxLength(6);
             entity.Property(e => e.CreatedAt)
@@ -174,7 +181,7 @@ public partial class HephaistosContext : DbContext
                 .HasColumnType("timestamp");
             entity.Property(e => e.Expires).HasMaxLength(6);
             entity.Property(e => e.Revoked).HasMaxLength(6);
-            entity.Property(e => e.UserId).HasColumnType("int(11)");
+            entity.Property(e => e.UserId).HasColumnType("int");
 
             entity.HasOne(d => d.User).WithMany(p => p.Refreshtokens)
                 .HasForeignKey(d => d.UserId)
@@ -183,33 +190,33 @@ public partial class HephaistosContext : DbContext
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id).HasName("PK_Role");
 
             entity.ToTable("roles");
 
-            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.Id).HasColumnType("int");
             entity.Property(e => e.Name).HasMaxLength(256);
             entity.Property(e => e.NormalizedName).HasMaxLength(256);
         });
 
         modelBuilder.Entity<Subject>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id).HasName("PK_Subject");
 
             entity.ToTable("subjects");
 
             entity.HasIndex(e => e.MajorId, "MajorId");
 
-            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.Id).HasColumnType("int");
             entity.Property(e => e.Active).HasDefaultValueSql("'1'");
             entity.Property(e => e.Code).HasMaxLength(255);
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("current_timestamp()")
                 .HasColumnType("timestamp");
-            entity.Property(e => e.CreditValue).HasColumnType("int(11)");
+            entity.Property(e => e.CreditValue).HasColumnType("int");
             entity.Property(e => e.IsElective).HasDefaultValueSql("'0'");
             entity.Property(e => e.IsEvenSemester).HasDefaultValueSql("'0'");
-            entity.Property(e => e.MajorId).HasColumnType("int(11)");
+            entity.Property(e => e.MajorId).HasColumnType("int");
             entity.Property(e => e.Name).HasMaxLength(255);
             entity.Property(e => e.Note).HasColumnType("text");
 
@@ -220,11 +227,11 @@ public partial class HephaistosContext : DbContext
 
         modelBuilder.Entity<University>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id).HasName("PK_University");
 
             entity.ToTable("universities");
 
-            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.Id).HasColumnType("int");
             entity.Property(e => e.Active).HasDefaultValueSql("'1'");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("current_timestamp()")
@@ -236,25 +243,25 @@ public partial class HephaistosContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.HasKey(e => e.Id).HasName("PK_User");
 
             entity.ToTable("users");
 
             entity.HasIndex(e => e.MajorId, "fk_users_major");
 
-            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.Id).HasColumnType("int");
             entity.Property(e => e.Active).HasDefaultValueSql("'1'");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("current_timestamp()")
                 .HasColumnType("timestamp");
             entity.Property(e => e.Email).HasMaxLength(255);
-            entity.Property(e => e.MajorId).HasColumnType("int(11)");
+            entity.Property(e => e.MajorId).HasColumnType("int");
             entity.Property(e => e.Note).HasColumnType("text");
             entity.Property(e => e.PasswordHash).HasMaxLength(255);
             entity.Property(e => e.ProfilePicturepath).HasMaxLength(255);
             entity.Property(e => e.Role).HasMaxLength(255);
-            entity.Property(e => e.StartYear).HasColumnType("int(11)");
-            entity.Property(e => e.Status).HasColumnType("enum('active','passive')");
+            entity.Property(e => e.StartYear).HasColumnType("int");
+            entity.Property(e => e.Status).HasMaxLength(50); // Changed from enum to string
             entity.Property(e => e.Username).HasMaxLength(255);
 
             entity.HasOne(d => d.Major).WithMany(p => p.Users)

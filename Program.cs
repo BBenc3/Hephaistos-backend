@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore.SqlServer;
 using Microsoft.OpenApi.Models;
 using ProjectHephaistos.Data;
 using ProjectHephaistos.Services;
@@ -66,11 +67,16 @@ namespace ProjectHephaistos
          });
 
 
-            builder.Services.AddDbContext<HephaistosContext>(options =>
-            {
-                var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-                ;
-            });
+          builder.Services.AddDbContext<HephaistosContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new InvalidOperationException("Connection string 'DefaultConnection' is not set.");
+    }
+    options.UseSqlServer(connectionString);
+});
+
 
 
             builder.Services.AddAuthentication(options =>
