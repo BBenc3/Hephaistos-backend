@@ -129,16 +129,14 @@ namespace ProjectHephaistos
             app.UseHttpsRedirection();
             app.UseStaticFiles(); // Add this line to serve static files
 
-            if (app.Environment.IsDevelopment())
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Project Hephaistos API v1");
-                    c.RoutePrefix = string.Empty;
-                });
-            }
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Project Hephaistos API v1");
+                c.RoutePrefix = string.Empty;
+            });
+
 
             app.UseCors();
 
