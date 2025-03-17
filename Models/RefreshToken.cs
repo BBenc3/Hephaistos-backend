@@ -1,20 +1,25 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 
-namespace ProjectHephaistos.Models
+namespace ProjectHephaistos.Models;
+
+public partial class Refreshtoken
 {
-    public class RefreshToken : BaseModel
-    {
-        public string Token { get; set; }
-        public DateTime Expires { get; set; }
-        public DateTime Created { get; set; }
-        public DateTime? Revoked { get; set; }
-        public bool IsActive => Revoked == null && !IsExpired;
-        public bool IsExpired => DateTime.UtcNow >= Expires;
+    public int Id { get; set; }
 
-        // Add reference to User model
-        public int UserId { get; set; }
-        public User User { get; set; }
-    }
+    public string? Token { get; set; }
+
+    public DateTime? Expires { get; set; }
+
+    public DateTime? Created { get; set; }
+
+    public DateTime? Revoked { get; set; }
+
+    public int? UserId { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public bool? Active { get; set; }
+
+    public virtual User? User { get; set; }
 }
-
-

@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore.SqlServer;
 using Microsoft.OpenApi.Models;
 using ProjectHephaistos.Data;
-using System.Text;
-using Microsoft.AspNetCore.Identity;
-using ProjectHephaistos.Models;
 using ProjectHephaistos.Services;
+using System.Text;
 
 namespace ProjectHephaistos
 {
@@ -35,7 +34,12 @@ namespace ProjectHephaistos
                 throw new ArgumentNullException(nameof(secretKey), "JWT SecretKey cannot be null or empty.");
             }
 
-            builder.Services.AddSingleton<JwtHelper>();
+            builder.Services.AddSingleton<JwtHelper>(provider =>
+            {
+                var configuration = provider.GetRequiredService<IConfiguration>();
+                return new JwtHelper(configuration);
+            });
+
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -64,20 +68,16 @@ namespace ProjectHephaistos
 
 
             builder.Services.AddDbContext<HephaistosContext>(options =>
-            {
-                var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-                options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 27)),
-                    mySqlOptions =>
-                    {
-                        mySqlOptions.EnableRetryOnFailure(); // Enable retry on failure
-                        mySqlOptions.CommandTimeout(180); // Increase command timeout to 180 seconds
-                    });
-            });
+  {
+      var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+      if (string.IsNullOrEmpty(connectionString))
+      {
+          throw new InvalidOperationException("Connection string 'DefaultConnection' is not set.");
+      }
+      options.UseSqlServer(connectionString);
+  });
 
-            // Add ASP.NET Identity
-            builder.Services.AddIdentity<User, IdentityRole<int>>()
-                .AddEntityFrameworkStores<HephaistosContext>()
-                .AddDefaultTokenProviders();
+
 
             builder.Services.AddAuthentication(options =>
             {
@@ -101,10 +101,9 @@ namespace ProjectHephaistos
 
             builder.Services.AddCors(options =>
                 options.AddDefaultPolicy(builder =>
-                    builder.WithOrigins("http://localhost:3000", "http://localhost:3001")
+                    builder.AllowAnyOrigin()
                            .AllowAnyMethod()
                            .AllowAnyHeader()
-                           .AllowCredentials()
                 )
             );
 

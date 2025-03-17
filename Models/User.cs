@@ -1,15 +1,39 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
-namespace ProjectHephaistos.Models
+namespace ProjectHephaistos.Models;
+
+public partial class User
 {
-    public class User : IdentityUser<int>
-    {
-        public DateTime Created { get; set; } = DateTime.UtcNow;
-        public string Role { get; set; } = "User";
-        public bool Active { get; set; }
-        public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
-        public string? ProfilePicturePath { get; set; } = null;
-    }
+    public int Id { get; set; }
+
+    public string? Username { get; set; }
+
+    public string? PasswordHash { get; set; }
+
+    public string? Role { get; set; }
+
+    public string? Email { get; set; }
+
+    public int? StartYear { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public bool? Active { get; set; }
+
+    public string? Note { get; set; }
+
+    public int? MajorId { get; set; }
+
+    public string? ProfilePicturepath { get; set; }
+
+    public string? Status { get; set; }
+
+    public virtual ICollection<Auditlog> Auditlogs { get; set; } = new List<Auditlog>();
+
+    public virtual ICollection<Completedsubject> Completedsubjects { get; set; } = new List<Completedsubject>();
+
+    public virtual Major? Major { get; set; }
+
+    public virtual ICollection<Refreshtoken> Refreshtokens { get; set; } = new List<Refreshtoken>();
 }

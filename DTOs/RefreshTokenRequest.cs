@@ -1,4 +1,7 @@
-public class RefreshTokenRequest
+﻿namespace ProjectHephaistos.DTOs
 {
-    public string RefreshToken { get; set; }
+    public class RefreshTokenRequest
+    {
+        public string RefreshToken { get; set; }
+    }
 }
