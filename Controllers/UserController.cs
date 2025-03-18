@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProjectHephaistos.Data;
 using ProjectHephaistos.DTOs;
 using ProjectHephaistos.Models;
@@ -26,7 +27,15 @@ namespace ProjectHephaistos.Controllers
         public IActionResult GetMe([FromHeader(Name = "Authorization")] string Authorization)
         {
             var user = _context.Users.FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(Authorization));
-
+            return(user == null) ? NotFound() : Ok(new
+            {
+                username = user.Username,
+                email = user.Email,
+                startYear = user.StartYear,
+                majorName = user.Major.Name,
+                university = user.Major.University.Name,
+                profilePicturePath = user.ProfilePicturepath
+            });
             if (user == null)
                 return NotFound();
 
