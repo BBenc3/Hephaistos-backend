@@ -7,5 +7,6 @@
         public string Password { get; set; }
         public int StartYear { get; set; }
         public int MajorId { get; set; }
+        public string Status { get; set; }
     }
 }

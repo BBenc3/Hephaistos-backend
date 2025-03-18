@@ -48,7 +48,8 @@ namespace ProjectHephaistos.Controllers
                 Email = request.Email,
                 PasswordHash = hashedPassword,
                 Role = "User",
-                MajorId = request.MajorId
+                MajorId = request.MajorId,
+                Status = request.Status,
             };
 
             await _context.Users.AddAsync(newUser);
