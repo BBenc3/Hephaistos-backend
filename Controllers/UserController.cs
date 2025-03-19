@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProjectHephaistos.Data;
 using ProjectHephaistos.DTOs;
 using ProjectHephaistos.Models;
@@ -27,7 +28,10 @@ namespace ProjectHephaistos.Controllers
         [Authorize]
         public IActionResult GetMe([FromHeader(Name = "Authorization")] string Authorization)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(Authorization));
+            var user = _context.Users
+                .Include(u => u.Major)
+                .ThenInclude(m => m.University)
+                .FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(Authorization));
             if (user == null)
                 return NotFound();
 
@@ -118,25 +122,7 @@ namespace ProjectHephaistos.Controllers
             return Ok(new { fileUrl = remoteFileUrl });
         }
 
-        [HttpPut("updateProfilePicture")]
-        [Authorize]
-        public async Task<IActionResult> UpdateProfilePicture([FromHeader(Name = "Authorization")] string authorization, [FromBody] UpdateProfilePictureRequest request)
-        {
-            var user = _context.Users.FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(authorization));
-            if (user == null)
-                return NotFound("Felhasználó nem található.");
 
-            var filesAndDirectories = _ftpService.ListDirectory("");
-            if (!filesAndDirectories.Contains(request.ImageName))
-                return BadRequest("A megadott kép nem található az FTP szerveren.");
 
-            string ftpUrl = _configuration.GetValue<string>("FtpConfig:Url");
-            var remoteFileUrl = $"{ftpUrl}/{request.ImageName}";
-
-            user.ProfilePicturepath = remoteFileUrl;
-            await _context.SaveChangesAsync();
-
-            return Ok(new { fileUrl = remoteFileUrl });
-        }
     }
 }
