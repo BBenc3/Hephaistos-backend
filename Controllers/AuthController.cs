@@ -50,6 +50,7 @@ namespace ProjectHephaistos.Controllers
                 Role = "User",
                 MajorId = request.MajorId,
                 Status = request.Status,
+                ProfilePicturepath = "default.png",
             };
 
             await _context.Users.AddAsync(newUser);
