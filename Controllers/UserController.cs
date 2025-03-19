@@ -24,32 +24,29 @@ namespace ProjectHephaistos.Controllers
         }
 
         [HttpGet("me")]
+        [Authorize]
         public IActionResult GetMe([FromHeader(Name = "Authorization")] string Authorization)
         {
             var user = _context.Users.FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(Authorization));
-            return(user == null) ? NotFound() : Ok(new
-            {
-                username = user.Username,
-                email = user.Email,
-                startYear = user.StartYear,
-                majorName = user.Major.Name,
-                university = user.Major.University.Name,
-                profilePicturePath = user.ProfilePicturepath
-            });
             if (user == null)
                 return NotFound();
+
+            var majorName = user.Major?.Name ?? "N/A";
+            var universityName = user.Major?.University?.Name ?? "N/A";
 
             return Ok(new
             {
                 username = user.Username,
                 email = user.Email,
                 startYear = user.StartYear,
-                majorName = user.Major.Name,
-                university = user.Major.University.Name
+                majorName = majorName,
+                university = universityName,
+                profilePicturePath = user.ProfilePicturepath
             });
         }
 
         [HttpPut("completedSubjects")]
+        [Authorize]
         public IActionResult completedSubjects([FromHeader(Name = "Authorization")] string authorization, [FromBody] AddCompletedSubjectRequest completedsubjects)
         {
             var user = _context.Users.FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(authorization));
@@ -72,6 +69,7 @@ namespace ProjectHephaistos.Controllers
         }
 
         [HttpGet("completedSubjects")]
+        [Authorize]
         public IActionResult GetCompletedSubjects([FromHeader(Name = "Authorization")] string authorization)
         {
             var user = _context.Users.FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(authorization));
@@ -81,7 +79,8 @@ namespace ProjectHephaistos.Controllers
         }
 
         [HttpPut("uploadProfilePicture")]
-        public async Task<IActionResult> UploadProfilePicture([FromHeader(Name = "Authorization")] string authorization,[FromForm] IFormFile file)
+        [Authorize]
+        public async Task<IActionResult> UploadProfilePicture([FromHeader(Name = "Authorization")] string authorization, [FromForm] IFormFile file)
         {
             var user = _context.Users.FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(authorization));
             if (user == null)
