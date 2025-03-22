@@ -36,7 +36,8 @@ namespace ProjectHephaistos.Controllers
                 email = user.Email,
                 startYear = user.StartYear,
                 majorName = user.Major.Name,
-                university = user.Major.University.Name
+                university = user.Major.University.Name,
+                completedSubjects = user.Completedsubjects
             });
         }
 
