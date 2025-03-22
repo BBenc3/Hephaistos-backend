@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProjectHephaistos.Data;
 using ProjectHephaistos.DTOs;
 using ProjectHephaistos.Models;
@@ -23,12 +25,18 @@ namespace ProjectHephaistos.Controllers
         }
 
         [HttpGet("me")]
+        [Authorize]
         public IActionResult GetMe([FromHeader(Name = "Authorization")] string Authorization)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(Authorization));
-
+            var user = _context.Users
+                .Include(u => u.Major)
+                .ThenInclude(m => m.University)
+                .FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(Authorization));
             if (user == null)
                 return NotFound();
+
+            var majorName = user.Major?.Name ?? "N/A";
+            var universityName = user.Major?.University?.Name ?? "N/A";
 
             return Ok(new
             {
@@ -42,6 +50,7 @@ namespace ProjectHephaistos.Controllers
         }
 
         [HttpPut("completedSubjects")]
+        [Authorize]
         public IActionResult completedSubjects([FromHeader(Name = "Authorization")] string authorization, [FromBody] AddCompletedSubjectRequest completedsubjects)
         {
             var user = _context.Users.FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(authorization));
@@ -64,6 +73,7 @@ namespace ProjectHephaistos.Controllers
         }
 
         [HttpGet("completedSubjects")]
+        [Authorize]
         public IActionResult GetCompletedSubjects([FromHeader(Name = "Authorization")] string authorization)
         {
             var user = _context.Users.FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(authorization));
@@ -73,7 +83,8 @@ namespace ProjectHephaistos.Controllers
         }
 
         [HttpPut("uploadProfilePicture")]
-        public async Task<IActionResult> UploadProfilePicture([FromHeader(Name = "Authorization")] string authorization,[FromForm] IFormFile file)
+        [Authorize]
+        public async Task<IActionResult> UploadProfilePicture([FromHeader(Name = "Authorization")] string authorization, [FromForm] IFormFile file)
         {
             var user = _context.Users.FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(authorization));
             if (user == null)

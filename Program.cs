@@ -7,6 +7,7 @@ using ProjectHephaistos.Data;
 using ProjectHephaistos.Services;
 using System.Text;
 using Microsoft.Extensions.Options;
+using System.Text.Json.Serialization;
 
 namespace ProjectHephaistos
 {
@@ -41,44 +42,44 @@ namespace ProjectHephaistos
                 return new JwtHelper(configuration);
             });
 
-
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+                });
             builder.Services.AddEndpointsApiExplorer();
 
             builder.Services.AddSwaggerGen(options =>
-         {
-             options.SwaggerDoc("v1", new OpenApiInfo
-             {
-                 Title = "Project Hephaistos API",
-                 Version = "v1",
-                 Description = "API documentation for Project Hephaistos."
-             });
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Project Hephaistos API",
+                    Version = "v1",
+                    Description = "API documentation for Project Hephaistos."
+                });
 
-             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-             {
-                 Name = "Authorization",
-                 Scheme = "Bearer",
-                 BearerFormat = "JWT",
-                 In = ParameterLocation.Header,
-                 Type = SecuritySchemeType.Http,
-                 Description = "Enter 'Bearer' followed by a space and your JWT token."
-             });
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Description = "Enter 'Bearer' followed by a space and your JWT token."
+                });
 
-             options.OperationFilter<AuthorizeCheckOperationFilter>();
-         });
-
+                options.OperationFilter<AuthorizeCheckOperationFilter>();
+            });
 
             builder.Services.AddDbContext<HephaistosContext>(options =>
-  {
-      var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-      if (string.IsNullOrEmpty(connectionString))
-      {
-          throw new InvalidOperationException("Connection string 'DefaultConnection' is not set.");
-      }
-      options.UseSqlServer(connectionString);
-  });
-
-
+            {
+                var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+                if (string.IsNullOrEmpty(connectionString))
+                {
+                    throw new InvalidOperationException("Connection string 'DefaultConnection' is not set.");
+                }
+                options.UseSqlServer(connectionString);
+            });
 
            builder.Services.AddAuthentication(options =>
 {
@@ -104,8 +105,8 @@ namespace ProjectHephaistos
             builder.Services.AddCors(options =>
                 options.AddDefaultPolicy(builder =>
                     builder.AllowAnyOrigin()
-                           .AllowAnyMethod()
-                           .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
                 )
             );
 
@@ -130,16 +131,13 @@ namespace ProjectHephaistos
             app.UseHttpsRedirection();
             app.UseStaticFiles(); // Add this line to serve static files
 
-            if (app.Environment.IsDevelopment())
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Project Hephaistos API v1");
-                    c.RoutePrefix = string.Empty;
-                });
-            }
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Project Hephaistos API v1");
+                c.RoutePrefix = string.Empty;
+            });
 
             app.UseCors();
 

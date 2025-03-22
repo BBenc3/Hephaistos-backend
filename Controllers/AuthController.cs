@@ -42,13 +42,23 @@ namespace ProjectHephaistos.Controllers
 
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
+            var userMajor = await _context.Majors.FirstOrDefaultAsync(x => x.Id == request.MajorId);
+            if (userMajor == null)
+            {
+                return BadRequest("Nem található a megadott szak.");
+            }
+
             var newUser = new User
             {
                 Username = request.Username,
                 Email = request.Email,
                 PasswordHash = hashedPassword,
                 Role = "User",
-                MajorId = request.MajorId
+                MajorId = request.MajorId,
+                Status = request.Status,
+                StartYear = request.StartYear,
+                ProfilePicturepath = "default.png",
+                Major = userMajor
             };
 
             await _context.Users.AddAsync(newUser);
