@@ -22,14 +22,9 @@ public partial class HephaistosContext : DbContext
 
     public virtual DbSet<Completedsubject> Completedsubjects { get; set; }
 
-    public virtual DbSet<Course> Courses { get; set; }
-
-
     public virtual DbSet<Major> Majors { get; set; }
 
     public virtual DbSet<Refreshtoken> Refreshtokens { get; set; }
-
-    public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<Subject> Subjects { get; set; }
 
@@ -132,16 +127,6 @@ public partial class HephaistosContext : DbContext
                 .HasConstraintName("completedsubjects_ibfk_1");
         });
 
-        modelBuilder.Entity<Course>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK_Course");
-
-            entity.ToTable("course");
-
-            entity.Property(e => e.Id).HasColumnType("int");
-            entity.Property(e => e.CreatedAt).HasMaxLength(6);
-        });
-
 
         modelBuilder.Entity<Major>(entity =>
         {
@@ -186,17 +171,6 @@ public partial class HephaistosContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.Refreshtokens)
                 .HasForeignKey(d => d.UserId)
                 .HasConstraintName("refreshtokens_ibfk_1");
-        });
-
-        modelBuilder.Entity<Role>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK_Role");
-
-            entity.ToTable("roles");
-
-            entity.Property(e => e.Id).HasColumnType("int");
-            entity.Property(e => e.Name).HasMaxLength(256);
-            entity.Property(e => e.NormalizedName).HasMaxLength(256);
         });
 
         modelBuilder.Entity<Subject>(entity =>

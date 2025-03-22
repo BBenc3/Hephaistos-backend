@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.Icao;
 using ProjectHephaistos.Data;
 using ProjectHephaistos.DTOs;
 using ProjectHephaistos.Models;
@@ -31,7 +32,10 @@ namespace ProjectHephaistos.Controllers
             var user = _context.Users
                 .Include(u => u.Major)
                 .ThenInclude(m => m.University)
+                .Include(u => u.Completedsubjects)
+                .ThenInclude(cs => cs.Subject)
                 .FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(Authorization));
+
             if (user == null)
                 return NotFound();
 
@@ -45,41 +49,27 @@ namespace ProjectHephaistos.Controllers
                 startYear = user.StartYear,
                 majorName = user.Major.Name,
                 university = user.Major.University.Name,
-                completedSubjects = user.Completedsubjects
+                profilePicturePath = user.ProfilePicturepath,
+                completedSubjects = user.Completedsubjects.Select(x => new { x.SubjectId, x.Subject.Name }).ToList(),
             });
         }
 
         [HttpPut("completedSubjects")]
         [Authorize]
-        public IActionResult completedSubjects([FromHeader(Name = "Authorization")] string authorization, [FromBody] AddCompletedSubjectRequest completedsubjects)
+        public IActionResult completedSubjects([FromHeader(Name = "Authorization")] string authorization, [FromBody] AddCompletedSubjectRequest request)
         {
             var user = _context.Users.FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(authorization));
             if (user == null) return NotFound();
 
-            foreach (var completedsubjectId in completedsubjects.completedSubjectIds)
+            user.Completedsubjects = request.completedSubjectIds.Select(cs => new Completedsubject
             {
-                var completedSubject = new Completedsubject
-                {
-                    UserId = user.Id,
-                    SubjectId = completedsubjectId,
-                };
-
-                _context.Completedsubjects.Add(completedSubject);
-            }
+                UserId = user.Id,
+                SubjectId = cs
+            }).ToList();
 
             _context.SaveChanges();
 
             return Ok();
-        }
-
-        [HttpGet("completedSubjects")]
-        [Authorize]
-        public IActionResult GetCompletedSubjects([FromHeader(Name = "Authorization")] string authorization)
-        {
-            var user = _context.Users.FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(authorization));
-            if (user == null) return NotFound();
-            var completedSubjects = _context.Completedsubjects.Where(cs => cs.UserId == user.Id).ToList();
-            return Ok(completedSubjects);
         }
 
         [HttpPut("uploadProfilePicture")]
@@ -121,8 +111,5 @@ namespace ProjectHephaistos.Controllers
 
             return Ok(new { fileUrl = remoteFileUrl });
         }
-
-
-
     }
 }

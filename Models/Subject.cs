@@ -15,9 +15,9 @@ public partial class Subject
 
     public int? MajorId { get; set; }
 
-    public bool? IsElective { get; set; }
+    public bool IsElective { get; set; } = false;
 
-    public bool? IsEvenSemester { get; set; }
+    public bool IsEvenSemester { get; set; } = DateTime.Now.Month <= 8;
 
     public DateTime CreatedAt { get; set; }
 

@@ -11,11 +11,11 @@ public partial class User
 
     public string? PasswordHash { get; set; }
 
-    public string? Role { get; set; }
+    public string? Role { get; set; } = "User";
 
     public string? Email { get; set; }
 
-    public int? StartYear { get; set; }
+    public int? StartYear { get; set; } = DateTime.Now.Year;
 
     public DateTime CreatedAt { get; set; }
 

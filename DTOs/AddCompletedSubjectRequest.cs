@@ -3,6 +3,5 @@
     public class AddCompletedSubjectRequest
     {
         public List<int> completedSubjectIds { get; set; }
-        public int UserId { get; set; }
     }
 }
