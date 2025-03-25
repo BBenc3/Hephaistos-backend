@@ -18,7 +18,7 @@ public partial class HephaistosContext : DbContext
 
     public virtual DbSet<Auditlog> Auditlogs { get; set; }
 
-    public virtual DbSet<Classschedule> Classschedules { get; set; }
+    public virtual DbSet<SubjectSchedule> Subjectschedules { get; set; }
 
     public virtual DbSet<Completedsubject> Completedsubjects { get; set; }
 
@@ -31,6 +31,8 @@ public partial class HephaistosContext : DbContext
     public virtual DbSet<University> Universities { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+
+    public virtual DbSet<GeneratedTimetable> GeneratedTimetables { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -74,11 +76,11 @@ public partial class HephaistosContext : DbContext
                 .HasConstraintName("auditlog_ibfk_1");
         });
 
-        modelBuilder.Entity<Classschedule>(entity =>
+        modelBuilder.Entity<SubjectSchedule>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_Classschedule");
 
-            entity.ToTable("classschedules");
+            entity.ToTable("classschedules"); // Updated table name
 
             entity.HasIndex(e => e.SubjectId, "SubjectId");
 
@@ -95,10 +97,10 @@ public partial class HephaistosContext : DbContext
             entity.Property(e => e.SubjectId).HasColumnType("int");
             entity.Property(e => e.Year).HasColumnType("int");
 
-            entity.HasOne(d => d.Subject).WithMany(p => p.Classschedules)
+            entity.HasOne(d => d.Subject).WithMany(p => p.Subjectschedules)
                 .HasForeignKey(d => d.SubjectId)
                 .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("classschedules_ibfk_1");
+                .HasConstraintName("Subjectschedules_ibfk_1");
         });
 
         modelBuilder.Entity<Completedsubject>(entity =>
@@ -174,29 +176,59 @@ public partial class HephaistosContext : DbContext
         });
 
         modelBuilder.Entity<Subject>(entity =>
+  {
+      entity.HasKey(e => e.Id).HasName("PK_Subject");
+
+      entity.ToTable("subjects");
+
+      entity.HasIndex(e => e.MajorId, "MajorId");
+
+      entity.Property(e => e.Id).HasColumnType("int");
+      entity.Property(e => e.Active).HasDefaultValueSql("'1'");
+      entity.Property(e => e.Code).HasMaxLength(255);
+      entity.Property(e => e.CreatedAt)
+          .HasDefaultValueSql("current_timestamp()")
+          .HasColumnType("timestamp");
+      entity.Property(e => e.CreditValue).HasColumnType("int");
+      entity.Property(e => e.IsElective).HasDefaultValueSql("'0'");
+      entity.Property(e => e.IsEvenSemester).HasDefaultValueSql("'0'");
+      entity.Property(e => e.MajorId).HasColumnType("int");
+      entity.Property(e => e.Name).HasMaxLength(255);
+      entity.Property(e => e.Note).HasColumnType("text");
+
+      entity.HasOne(d => d.Major).WithMany(p => p.Subjects)
+          .HasForeignKey(d => d.MajorId)
+          .HasConstraintName("subjects_ibfk_1");
+
+      // Előfeltételek Many-to-Many kapcsolat
+      entity.HasMany(s => s.PrerequisiteSubjects)
+          .WithMany(s => s.RequiredForSubjects)
+          .UsingEntity<Dictionary<string, object>>(
+              "SubjectPrerequisites",
+              j => j.HasOne<Subject>().WithMany().HasForeignKey("PrerequisiteId"),
+              j => j.HasOne<Subject>().WithMany().HasForeignKey("SubjectId")
+          );
+  });
+
+        modelBuilder.Entity<GeneratedTimetable>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK_Subject");
+            entity.HasKey(e => e.Id).HasName("PK_GeneratedTimetable");
 
-            entity.ToTable("subjects");
+            entity.ToTable("generatedtimetables");
 
-            entity.HasIndex(e => e.MajorId, "MajorId");
+            entity.HasIndex(e => e.UserId, "UserId");
 
             entity.Property(e => e.Id).HasColumnType("int");
             entity.Property(e => e.Active).HasDefaultValueSql("'1'");
-            entity.Property(e => e.Code).HasMaxLength(255);
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("current_timestamp()")
                 .HasColumnType("timestamp");
-            entity.Property(e => e.CreditValue).HasColumnType("int");
-            entity.Property(e => e.IsElective).HasDefaultValueSql("'0'");
-            entity.Property(e => e.IsEvenSemester).HasDefaultValueSql("'0'");
-            entity.Property(e => e.MajorId).HasColumnType("int");
             entity.Property(e => e.Name).HasMaxLength(255);
-            entity.Property(e => e.Note).HasColumnType("text");
+            entity.Property(e => e.UserId).HasColumnType("int");
 
-            entity.HasOne(d => d.Major).WithMany(p => p.Subjects)
-                .HasForeignKey(d => d.MajorId)
-                .HasConstraintName("subjects_ibfk_1");
+            entity.HasOne(d => d.User).WithMany(p => p.GeneratedTimetables)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("generatedtimetables_ibfk_1");
         });
 
         modelBuilder.Entity<University>(entity =>

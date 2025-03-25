@@ -12,8 +12,8 @@ using ProjectHephaistos.Data;
 namespace ProjectHephaistos.Migrations
 {
     [DbContext(typeof(HephaistosContext))]
-    [Migration("20250316100448_azureinit")]
-    partial class azureinit
+    [Migration("20250316100448_AzureInit")]
+    partial class AzureInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

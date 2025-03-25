@@ -36,4 +36,6 @@ public partial class User
     public virtual Major? Major { get; set; }
 
     public virtual ICollection<Refreshtoken> Refreshtokens { get; set; } = new List<Refreshtoken>();
+
+    public virtual ICollection<GeneratedTimetable> GeneratedTimetables { get; set; } = new List<GeneratedTimetable>();
 }

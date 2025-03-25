@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectHephaistos.Data;
 
@@ -11,9 +12,11 @@ using ProjectHephaistos.Data;
 namespace ProjectHephaistos.Migrations
 {
     [DbContext(typeof(HephaistosContext))]
-    partial class HephaistosContextModelSnapshot : ModelSnapshot
+    [Migration("20250325095601_AddGeneratedTimetable")]
+    partial class AddGeneratedTimetable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -90,41 +93,6 @@ namespace ProjectHephaistos.Migrations
                     b.HasIndex(new[] { "UserId" }, "UserId");
 
                     b.ToTable("completedsubjects", (string)null);
-                });
-
-            modelBuilder.Entity("ProjectHephaistos.Models.GeneratedTimetable", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool?>("Active")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValueSql("'1'");
-
-                    b.Property<byte[]>("CreatedAt")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp")
-                        .HasDefaultValueSql("current_timestamp()");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id")
-                        .HasName("PK_GeneratedTimetable");
-
-                    b.HasIndex(new[] { "UserId" }, "UserId");
-
-                    b.ToTable("generatedtimetables", (string)null);
                 });
 
             modelBuilder.Entity("ProjectHephaistos.Models.Major", b =>
@@ -290,9 +258,6 @@ namespace ProjectHephaistos.Migrations
                     b.Property<TimeOnly?>("EndTime")
                         .HasColumnType("time");
 
-                    b.Property<int?>("GeneratedTimetableId")
-                        .HasColumnType("int");
-
                     b.Property<TimeOnly?>("StartTime")
                         .HasColumnType("time");
 
@@ -304,8 +269,6 @@ namespace ProjectHephaistos.Migrations
 
                     b.HasKey("Id")
                         .HasName("PK_Classschedule");
-
-                    b.HasIndex("GeneratedTimetableId");
 
                     b.HasIndex(new[] { "SubjectId" }, "SubjectId");
 
@@ -451,18 +414,6 @@ namespace ProjectHephaistos.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ProjectHephaistos.Models.GeneratedTimetable", b =>
-                {
-                    b.HasOne("ProjectHephaistos.Models.User", "User")
-                        .WithMany("GeneratedTimetables")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("generatedtimetables_ibfk_1");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("ProjectHephaistos.Models.Major", b =>
                 {
                     b.HasOne("ProjectHephaistos.Models.University", "University")
@@ -495,15 +446,11 @@ namespace ProjectHephaistos.Migrations
 
             modelBuilder.Entity("ProjectHephaistos.Models.SubjectSchedule", b =>
                 {
-                    b.HasOne("ProjectHephaistos.Models.GeneratedTimetable", null)
-                        .WithMany("ClassSchedules")
-                        .HasForeignKey("GeneratedTimetableId");
-
                     b.HasOne("ProjectHephaistos.Models.Subject", "Subject")
-                        .WithMany("Subjectschedules")
+                        .WithMany("Classschedules")
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .HasConstraintName("Subjectschedules_ibfk_1");
+                        .HasConstraintName("classschedules_ibfk_1");
 
                     b.Navigation("Subject");
                 });
@@ -534,11 +481,6 @@ namespace ProjectHephaistos.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ProjectHephaistos.Models.GeneratedTimetable", b =>
-                {
-                    b.Navigation("ClassSchedules");
-                });
-
             modelBuilder.Entity("ProjectHephaistos.Models.Major", b =>
                 {
                     b.Navigation("Subjects");
@@ -548,9 +490,9 @@ namespace ProjectHephaistos.Migrations
 
             modelBuilder.Entity("ProjectHephaistos.Models.Subject", b =>
                 {
-                    b.Navigation("Completedsubjects");
+                    b.Navigation("Classschedules");
 
-                    b.Navigation("Subjectschedules");
+                    b.Navigation("Completedsubjects");
                 });
 
             modelBuilder.Entity("ProjectHephaistos.Models.University", b =>
@@ -563,8 +505,6 @@ namespace ProjectHephaistos.Migrations
                     b.Navigation("Auditlogs");
 
                     b.Navigation("Completedsubjects");
-
-                    b.Navigation("GeneratedTimetables");
 
                     b.Navigation("Refreshtokens");
                 });

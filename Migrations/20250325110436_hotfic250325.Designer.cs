@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectHephaistos.Data;
 
@@ -11,9 +12,11 @@ using ProjectHephaistos.Data;
 namespace ProjectHephaistos.Migrations
 {
     [DbContext(typeof(HephaistosContext))]
-    partial class HephaistosContextModelSnapshot : ModelSnapshot
+    [Migration("20250325110436_hotfic250325")]
+    partial class hotfic250325
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

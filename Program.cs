@@ -81,26 +81,26 @@ namespace ProjectHephaistos
                 options.UseSqlServer(connectionString);
             });
 
-           builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
-        ClockSkew = TimeSpan.Zero
-    };
-});
-            
+            builder.Services.AddAuthentication(options =>
+ {
+     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+ })
+ .AddJwtBearer(options =>
+ {
+     options.TokenValidationParameters = new TokenValidationParameters
+     {
+         ValidateIssuer = true,
+         ValidateAudience = true,
+         ValidateLifetime = true,
+         ValidateIssuerSigningKey = true,
+         ValidIssuer = jwtSettings["Issuer"],
+         ValidAudience = jwtSettings["Audience"],
+         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+         ClockSkew = TimeSpan.Zero
+     };
+ });
+
 
             builder.Services.AddCors(options =>
                 options.AddDefaultPolicy(builder =>
@@ -124,6 +124,7 @@ namespace ProjectHephaistos
 
             builder.Services.Configure<FtpConfig>(builder.Configuration.GetSection("FtpConfig"));
             builder.Services.AddScoped<FtpService>();
+            builder.Services.AddScoped<TimetableGenerator>();
         }
 
         private static void ConfigurePipeline(WebApplication app)

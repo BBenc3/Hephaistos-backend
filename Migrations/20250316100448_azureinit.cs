@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ProjectHephaistos.Migrations
 {
     /// <inheritdoc />
-    public partial class azureinit : Migration
+    public partial class AzureInit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
