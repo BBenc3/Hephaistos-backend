@@ -111,5 +111,28 @@ namespace ProjectHephaistos.Controllers
 
             return Ok(new { fileUrl = remoteFileUrl });
         }
+
+        [HttpGet("subjects")]
+        [Authorize]
+        public IActionResult GetSubjects([FromHeader(Name = "Authorization")] string authorization)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(authorization));
+            if (user == null) return NotFound();
+
+            var subjects = _context.Subjects
+                .Include(s => s.Major)
+                .ThenInclude(m => m.University)
+                .Where(s => s.MajorId == user.MajorId)
+                .Select(s => new
+                {
+                    s.Id,
+                    s.Name,
+                    MajorName = s.Major.Name,
+                    UniversityName = s.Major.University.Name
+                })
+                .ToList();
+
+            return Ok(subjects);
+        }
     }
 }
