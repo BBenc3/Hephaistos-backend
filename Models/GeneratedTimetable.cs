@@ -17,6 +17,10 @@ namespace ProjectHephaistos.Models
 
         public virtual User? User { get; set; } // Kapcsolat a felhasználóhoz
 
-        public virtual ICollection<SubjectSchedule> ClassSchedules { get; set; } = new List<SubjectSchedule>(); // Kapcsolat az órarendi bejegyzésekkel
+        // Az órarendhez tartozó bejegyzések (pl. órarendi időpontok, tantárgyak)
+        public virtual ICollection<SubjectSchedule> ClassSchedules { get; set; } = new List<SubjectSchedule>();
+
+        // Azok a tantárgyak, amiket nem sikerült beilleszteni az órarendbe
+        public virtual ICollection<Subject> OmittedSubjects { get; set; } = new List<Subject>();
     }
 }

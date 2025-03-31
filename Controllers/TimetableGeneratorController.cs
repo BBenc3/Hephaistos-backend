@@ -39,9 +39,6 @@ namespace ProjectHephaistos.Controllers
                 }
 
                 var user = _context.Users
-                    .Include(u => u.Major)
-                    .ThenInclude(m => m.Subjects)
-                    .Include(u => u.Completedsubjects)
                     .FirstOrDefault(u => u.Id == userId.Value);
 
                 // Elérhető tantárgyak, ütemezés és előzőleg teljesített tantárgyak beszerzése
