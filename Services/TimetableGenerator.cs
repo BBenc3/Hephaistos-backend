@@ -47,6 +47,8 @@ namespace ProjectHephaistos.Services
                 }
             }
 
+
+
             return (selectedSchedules, omittedSubjects);
         }
 
