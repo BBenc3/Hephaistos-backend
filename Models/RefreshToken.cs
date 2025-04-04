@@ -11,7 +11,7 @@ public partial class Refreshtoken
 
     public DateTime? Expires { get; set; }
 
-    public DateTime? Created { get; set; }
+    public DateTime Created { get; set; } = DateTime.Now;
 
     public DateTime? Revoked { get; set; }
 
@@ -19,7 +19,7 @@ public partial class Refreshtoken
 
     public DateTime CreatedAt { get; set; }
 
-    public bool? Active { get; set; }
+    public bool Active { get; set; } = true;
 
     public virtual User? User { get; set; }
 }

@@ -11,7 +11,7 @@ public partial class Completedsubject
 
     public int? SubjectId { get; set; }
 
-    public bool? Active { get; set; }
+    public bool Active { get; set; } = true;
 
     public virtual Subject? Subject { get; set; }
 

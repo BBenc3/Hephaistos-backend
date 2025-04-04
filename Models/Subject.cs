@@ -21,7 +21,7 @@ namespace ProjectHephaistos.Models
 
         public DateTime CreatedAt { get; set; }
 
-        public bool? Active { get; set; }
+        public bool Active { get; set; } = true;
 
         public string? Note { get; set; }
 

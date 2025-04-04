@@ -11,7 +11,7 @@ public partial class SubjectSchedule
     public string? DayOfWeek { get; set; }
     public TimeOnly? StartTime { get; set; }
     public TimeOnly? EndTime { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public bool? Active { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public bool Active { get; set; } = true;
     public virtual Subject? Subject { get; set; }
 }

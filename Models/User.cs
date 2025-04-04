@@ -7,25 +7,25 @@ public partial class User
 {
     public int Id { get; set; }
 
-    public string? Username { get; set; }
+    public string Username { get; set; }
 
     public string? PasswordHash { get; set; }
 
-    public string? Role { get; set; } = "User";
+    public string Role { get; set; } = "User";
 
-    public string? Email { get; set; }
+    public string Email { get; set; }
 
-    public int? StartYear { get; set; } = DateTime.Now.Year;
+    public int StartYear { get; set; } = DateTime.Now.Year;
 
     public DateTime CreatedAt { get; set; }
 
-    public bool? Active { get; set; }
+    public bool Active { get; set; } = true;
 
     public string? Note { get; set; }
 
     public int? MajorId { get; set; }
 
-    public string? ProfilePicturepath { get; set; }
+    public string ProfilePicturepath { get; set; } = "default.png";
 
     public string? Status { get; set; }
 

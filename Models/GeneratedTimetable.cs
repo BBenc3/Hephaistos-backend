@@ -13,7 +13,7 @@ namespace ProjectHephaistos.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow; // Mikor készült az órarend
 
-        public bool? Active { get; set; } = true; // Aktív-e az órarend
+        public bool Active { get; set; } = true; // Aktív-e az órarend
 
         public virtual User? User { get; set; } // Kapcsolat a felhasználóhoz
 
