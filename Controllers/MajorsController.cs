@@ -41,6 +41,29 @@ namespace ProjectHephaistos.Controllers
             return Ok(majors);
         }
 
+        // Bárki elérheti, de csak az adott egyetem aktív szakait listázza
+        [HttpGet("university/{universityId}")]
+        public async Task<IActionResult> GetMajorsByUniversity(int universityId)
+        {
+            var majors = await _context.Majors
+                .Where(m => m.Active && m.UniversityId == universityId)
+                .Include(m => m.University)
+                .Select(m => new
+                {
+                    Id = m.Id,
+                    Name = m.Name,
+                    Note = m.Note,
+                    University = new
+                    {
+                        Id = m.University.Id,
+                        Name = m.University.Name
+                    }
+                })
+                .ToListAsync();
+
+            return Ok(majors);
+        }
+
         // Csak admin adhat hozzá szakot
         [HttpPost]
         [Authorize(Roles = "Admin")]
