@@ -56,18 +56,62 @@ namespace ProjectHephaistos.Controllers
 
         [HttpPut("me")]
         [Authorize]
-        public async Task<IActionResult> UpdateMe([FromHeader(Name = "Authorization")] string authorization, [FromBody] dynamic updatedData)
+        public async Task<IActionResult> UpdateMe([FromHeader(Name = "Authorization")] string authorization, [FromBody] UpdateUserDTO updatedData)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(authorization));
+            // Az Include-okkal lekérjük a navigációs property-ket is
+            var user = _context.Users
+                        .Include(u => u.Major)
+                            .ThenInclude(m => m.University)
+                        .Include(u => u.Completedsubjects)
+                            .ThenInclude(cs => cs.Subject)
+                        .FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(authorization));
             if (user == null)
                 return NotFound();
-            // Update only allowed fields
-            user.Username = updatedData.username != null ? updatedData.username : user.Username;
-            user.Email = updatedData.email != null ? updatedData.email : user.Email;
-            user.StartYear = updatedData.startYear != null ? (int)updatedData.startYear : user.StartYear;
+
+            // Ha módosítást várunk a MajorId-ben, ellenőrizzük, hogy létezik-e
+            if (updatedData.MajorId != null)
+            {
+                var majorExists = await _context.Majors.AnyAsync(m => m.Id == updatedData.MajorId);
+                if (!majorExists)
+                {
+                    return BadRequest($"A megadott MajorId ({updatedData.MajorId}) nem létezik.");
+                }
+                user.MajorId = (int)updatedData.MajorId;
+            }
+
+            if (updatedData.username != null)
+                user.Username = updatedData.username;
+            if (updatedData.Email != null)
+                user.Email = updatedData.Email;
+            if (updatedData.StartYear != null)
+                user.StartYear = (int)updatedData.StartYear;
+            if (updatedData.Role != null)
+                user.Role = updatedData.Role;
+            if (updatedData.Note != null)
+                user.Note = updatedData.Note;
+            if (updatedData.Active != null)
+                user.Active = (bool)updatedData.Active;
+            if (updatedData.Status != null)
+                user.Status = updatedData.Status;
+
             await _context.SaveChangesAsync();
-            return Ok(new { message = "Felhasználó adatok frissítve.", user });
+
+            // Csak a megadott mezőket küldjük vissza
+            return Ok(new
+            {
+                username = user.Username,
+                email = user.Email,
+                startYear = user.StartYear,
+                majorName = user.Major.Name,
+                university = user.Major.University.Name,
+                profilePicturePath = user.ProfilePicturepath,
+                completedSubjects = user.Completedsubjects
+                    .Select(x => new { x.SubjectId, x.Subject.Name })
+                    .ToList(),
+            });
         }
+
+
 
         [HttpPut("completedSubjects")]
         [Authorize]
