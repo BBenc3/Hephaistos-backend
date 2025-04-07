@@ -54,6 +54,21 @@ namespace ProjectHephaistos.Controllers
             });
         }
 
+        [HttpPut("me")]
+        [Authorize]
+        public async Task<IActionResult> UpdateMe([FromHeader(Name = "Authorization")] string authorization, [FromBody] dynamic updatedData)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(authorization));
+            if (user == null)
+                return NotFound();
+            // Update only allowed fields
+            user.Username = updatedData.username != null ? updatedData.username : user.Username;
+            user.Email = updatedData.email != null ? updatedData.email : user.Email;
+            user.StartYear = updatedData.startYear != null ? (int)updatedData.startYear : user.StartYear;
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Felhasználó adatok frissítve.", user });
+        }
+
         [HttpPut("completedSubjects")]
         [Authorize]
         public IActionResult completedSubjects([FromHeader(Name = "Authorization")] string authorization, [FromBody] AddCompletedSubjectRequest request)
