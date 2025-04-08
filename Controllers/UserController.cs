@@ -93,7 +93,7 @@ namespace ProjectHephaistos.Controllers
                 username = user.Username,
                 email = user.Email,
                 startYear = user.StartYear,
-                majorName = user.Major.Name,
+                majorName = user.Major?.Name ?? "N/A", // Added null check for user.Major
                 profilePicturePath = user.ProfilePicturepath,
                 completedSubjects = user.Completedsubjects
                     .Select(x => new { x.SubjectId, x.Subject.Name })
@@ -177,9 +177,14 @@ namespace ProjectHephaistos.Controllers
         [Authorize]
         public IActionResult GetAllSubjectsForMyMajor([FromHeader(Name = "Authorization")] string authorization)
         {
-            var userId = _jwtHelper.ExtractUserIdFromToken(authorization);
-            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+            if (string.IsNullOrEmpty(authorization))
+                return Unauthorized("Authorization header is missing.");
 
+            var userId = _jwtHelper.ExtractUserIdFromToken(authorization);
+            if (userId == null)
+                return Unauthorized("Invalid token.");
+
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
             if (user == null)
                 return NotFound("Felhasználó nem található.");
 
@@ -205,30 +210,6 @@ namespace ProjectHephaistos.Controllers
         {
             public string ProfilePicturePath { get; set; }
         }
-
-        [HttpGet("subjects")]
-        [Authorize]
-        public IActionResult GetSubjects([FromHeader(Name = "Authorization")] string authorization)
-        {
-            var user = _context.Users.FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(authorization));
-            if (user == null) return NotFound();
-
-            var subjects = _context.Subjects
-                .Include(s => s.Major)
-                .ThenInclude(m => m.University)
-                .Where(s => s.MajorId == user.MajorId)
-                .Select(s => new
-                {
-                    s.Id,
-                    s.Name,
-                    MajorName = s.Major.Name,
-                    UniversityName = s.Major.University.Name
-                })
-                .ToList();
-
-            return Ok(subjects);
-        }
-
         // Admin only endpoints
         [HttpGet("admin/all")]
         [Authorize(Roles = "Admin")]
