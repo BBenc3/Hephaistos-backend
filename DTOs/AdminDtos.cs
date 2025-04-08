@@ -27,12 +27,13 @@ namespace ProjectHephaistos.DTOs
 
     public class UpdateUserDTO
     {
-        public string? Email { get; set; }
-        public string? Role { get; set; }
-        public int? StartYear { get; set; }
-        public string? Note { get; set; }
-        public bool? Active { get; set; }
-        public string? Status { get; set; }
+        public string username { get; set; } // Felhasználónév (kötelező)
+        public string Email { get; set; }
+        public int StartYear { get; set; }
+        public string Role { get; set; }
+        public string Note { get; set; }
+        public bool Active { get; set; }
+        public string Status { get; set; }
         public int? MajorId { get; set; }
     }
 

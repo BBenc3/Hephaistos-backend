@@ -54,6 +54,53 @@ namespace ProjectHephaistos.Controllers
             });
         }
 
+        [HttpPut("me")]
+        [Authorize]
+        public async Task<IActionResult> UpdateMe([FromHeader(Name = "Authorization")] string authorization, [FromBody] UpdateUserDTO updatedData)
+        {
+            var user = _context.Users
+                        .Include(u => u.Major)
+                            .ThenInclude(m => m.University)
+                        .Include(u => u.Completedsubjects)
+                            .ThenInclude(cs => cs.Subject)
+                        .FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(authorization));
+            if (user == null)
+                return NotFound();
+
+            user.Username = updatedData.username;
+            user.Email = updatedData.Email;
+            user.StartYear = updatedData.StartYear;
+            user.Role = updatedData.Role;
+            user.Note = updatedData.Note;
+            user.Active = updatedData.Active;
+            user.Status = updatedData.Status;
+            if (updatedData.MajorId != null)
+            {
+                var majorExists = await _context.Majors.AnyAsync(m => m.Id == updatedData.MajorId);
+                if (!majorExists)
+                    return BadRequest($"A megadott MajorId ({updatedData.MajorId}) nem létezik.");
+                user.MajorId = updatedData.MajorId;
+            }
+            else
+            {
+                user.MajorId = null;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                username = user.Username,
+                email = user.Email,
+                startYear = user.StartYear,
+                majorName = user.Major.Name,
+                profilePicturePath = user.ProfilePicturepath,
+                completedSubjects = user.Completedsubjects
+                    .Select(x => new { x.SubjectId, x.Subject.Name })
+                    .ToList(),
+            });
+        }
+
         [HttpPut("completedSubjects")]
         [Authorize]
         public IActionResult completedSubjects([FromHeader(Name = "Authorization")] string authorization, [FromBody] AddCompletedSubjectRequest request)
@@ -260,13 +307,23 @@ namespace ProjectHephaistos.Controllers
             var user = _context.Users.FirstOrDefault(u => u.Id == id);
             if (user == null) return NotFound();
 
-            user.Email = dto.Email ?? user.Email;
-            user.Role = dto.Role ?? user.Role;
-            user.Note = dto.Note ?? user.Note;
-            user.Status = dto.Status ?? user.Status;
-            user.StartYear = dto.StartYear ?? user.StartYear;
-            user.Active = dto.Active ?? user.Active;
-            user.MajorId = dto.MajorId ?? user.MajorId;
+            user.Email = dto.Email;
+            user.Role = dto.Role;
+            user.Note = dto.Note;
+            user.Status = dto.Status;
+            user.StartYear = dto.StartYear;
+            user.Active = dto.Active;
+            if (dto.MajorId != null)
+            {
+                var majorExists = _context.Majors.Any(m => m.Id == dto.MajorId);
+                if (!majorExists)
+                    return BadRequest($"A megadott MajorId ({dto.MajorId}) nem létezik.");
+                user.MajorId = dto.MajorId;
+            }
+            else
+            {
+                user.MajorId = null;
+            }
 
             _context.SaveChanges();
 
