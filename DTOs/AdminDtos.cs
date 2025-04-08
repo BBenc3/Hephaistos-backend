@@ -1,6 +1,5 @@
 using System;
 
-
 namespace ProjectHephaistos.DTOs
 {
     public class UserAdminDTO
@@ -35,5 +34,14 @@ namespace ProjectHephaistos.DTOs
         public bool? Active { get; set; }
         public string? Status { get; set; }
         public int? MajorId { get; set; }
+    }
+
+    public class UpdateUserDetailsDTO
+    {
+        public string? Username { get; set; }
+        public string? Email { get; set; }
+        public int? StartYear { get; set; }
+        public string? MajorName { get; set; }
+        public string? University { get; set; }
     }
 }

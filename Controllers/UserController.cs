@@ -126,6 +126,34 @@ namespace ProjectHephaistos.Controllers
             return Ok(new { message = "Profile picture updated successfully.", fileUrl = user.ProfilePicturepath });
         }
 
+        [HttpGet("me/allsubjects")]
+        [Authorize]
+        public IActionResult GetAllSubjectsForMyMajor([FromHeader(Name = "Authorization")] string authorization)
+        {
+            var userId = _jwtHelper.ExtractUserIdFromToken(authorization);
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+            if (user == null)
+                return NotFound("Felhasználó nem található.");
+
+            var subjects = _context.Subjects
+                .Include(s => s.Major)
+                .Where(s => s.MajorId == user.MajorId && s.Active)
+                .Select(s => new
+                {
+                    s.Id,
+                    s.Name,
+                    s.Code,
+                    s.CreditValue,
+                    s.IsElective,
+                    s.IsEvenSemester
+                })
+                .ToList();
+
+            return Ok(subjects);
+        }
+
+
         public class ChangeProfilePictureRequest
         {
             public string ProfilePicturePath { get; set; }
@@ -257,6 +285,8 @@ namespace ProjectHephaistos.Controllers
 
             return Ok(new { message = "Felhasználó törölve." });
         }
+
+
 
     }
 }
