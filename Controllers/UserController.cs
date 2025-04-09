@@ -197,34 +197,43 @@ namespace ProjectHephaistos.Controllers
             return Ok(new { message = "Profile picture updated successfully.", fileUrl = user.ProfilePicturepath });
         }
 
-        public class ChangeProfilePictureRequest
-        {
-            public string ProfilePicturePath { get; set; }
-        }
-
-        [HttpGet("subjects")]
+        [HttpGet("me/allsubjects")]
         [Authorize]
-        public IActionResult GetSubjects([FromHeader(Name = "Authorization")] string authorization)
+        public IActionResult GetAllSubjectsForMyMajor([FromHeader(Name = "Authorization")] string authorization)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Id == _jwtHelper.ExtractUserIdFromToken(authorization));
-            if (user == null) return NotFound();
+            if (string.IsNullOrEmpty(authorization))
+                return Unauthorized("Authorization header is missing.");
+
+            var userId = _jwtHelper.ExtractUserIdFromToken(authorization);
+            if (userId == null)
+                return Unauthorized("Invalid token.");
+
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+            if (user == null)
+                return NotFound("Felhasználó nem található.");
 
             var subjects = _context.Subjects
                 .Include(s => s.Major)
-                .ThenInclude(m => m.University)
-                .Where(s => s.MajorId == user.MajorId)
+                .Where(s => s.MajorId == user.MajorId && s.Active)
                 .Select(s => new
                 {
                     s.Id,
                     s.Name,
-                    MajorName = s.Major.Name,
-                    UniversityName = s.Major.University.Name
+                    s.Code,
+                    s.CreditValue,
+                    s.IsElective,
+                    s.IsEvenSemester
                 })
                 .ToList();
 
             return Ok(subjects);
         }
 
+
+        public class ChangeProfilePictureRequest
+        {
+            public string ProfilePicturePath { get; set; }
+        }
         // Admin only endpoints
         [HttpGet("admin/all")]
         [Authorize(Roles = "Admin")]
@@ -338,6 +347,8 @@ namespace ProjectHephaistos.Controllers
 
             return Ok(new { message = "Felhasználó törölve." });
         }
+
+
 
     }
 }
