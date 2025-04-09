@@ -47,10 +47,22 @@ namespace ProjectHephaistos.Controllers
                 username = user.Username,
                 email = user.Email,
                 startYear = user.StartYear,
-                majorName = user.Major.Name,
-                university = user.Major.University.Name,
+                major = user.Major != null ? new
+                {
+                    id = user.Major.Id,
+                    name = user.Major.Name
+                } : null,
+                university = user.Major?.University != null ? new
+                {
+                    id = user.Major.University.Id,
+                    name = user.Major.University.Name
+                } : null,
                 profilePicturePath = user.ProfilePicturepath,
-                completedSubjects = user.Completedsubjects.Select(x => new { x.SubjectId, x.Subject.Name }).ToList(),
+                completedSubjects = user.Completedsubjects.Select(x => new
+                {
+                    x.SubjectId,
+                    x.Subject.Name
+                }).ToList(),
             });
         }
 
@@ -93,12 +105,24 @@ namespace ProjectHephaistos.Controllers
                 username = user.Username,
                 email = user.Email,
                 startYear = user.StartYear,
-                majorName = user.Major.Name,
+                major = user.Major != null ? new
+                {
+                    id = user.Major.Id,
+                    name = user.Major.Name
+                } : null,
+                university = user.Major?.University != null ? new
+                {
+                    id = user.Major.University.Id,
+                    name = user.Major.University.Name
+                } : null,
                 profilePicturePath = user.ProfilePicturepath,
-                completedSubjects = user.Completedsubjects
-                    .Select(x => new { x.SubjectId, x.Subject.Name })
-                    .ToList(),
+                completedSubjects = user.Completedsubjects.Select(x => new
+                {
+                    x.SubjectId,
+                    x.Subject.Name
+                }).ToList(),
             });
+
         }
 
         [HttpPut("completedSubjects")]
