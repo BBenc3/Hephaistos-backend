@@ -70,9 +70,9 @@ namespace ProjectHephaistos.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == request.UsernameOrEmail);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.UsernameOrEmail);
             if (user == null)
-                user = await _context.Users.SingleOrDefaultAsync(u => u.Username == request.UsernameOrEmail);
+                user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.UsernameOrEmail);
 
             if (user == null)
                 return BadRequest("Hibás felhasználónév vagy jelszó.");
