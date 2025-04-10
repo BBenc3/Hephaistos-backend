@@ -27,7 +27,7 @@ namespace ProjectHephaistos.DTOs
 
     public class UpdateUserDTO
     {
-        public string username { get; set; } // Felhasználónév (kötelező)
+        public string Username { get; set; } // Felhasználónév (kötelező)
         public string Email { get; set; }
         public int StartYear { get; set; }
         public string Role { get; set; }

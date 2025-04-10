@@ -80,7 +80,7 @@ namespace ProjectHephaistos.Controllers
             if (user == null)
                 return NotFound();
 
-            user.Username = updatedData.username;
+            user.Username = updatedData.Username;
             user.Email = updatedData.Email;
             user.StartYear = updatedData.StartYear;
             user.Role = updatedData.Role;
@@ -314,6 +314,8 @@ namespace ProjectHephaistos.Controllers
             var user = _context.Users.FirstOrDefault(u => u.Id == id);
             if (user == null) return NotFound();
 
+
+            user.Username = dto.Username;
             user.Email = dto.Email;
             user.Role = dto.Role;
             user.Note = dto.Note;
