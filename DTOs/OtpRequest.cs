@@ -2,6 +2,6 @@
 {
     public class OtpRequest
     {
-        public string Email { get; set; } = null!;
+        public string Email { get; set; } = string.Empty; // Ensure non-null default value
     }
 }

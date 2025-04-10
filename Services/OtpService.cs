@@ -2,22 +2,23 @@ namespace ProjectHephaistos.Services
 {
     using System;
     using System.Collections.Concurrent;
-    using System.Threading.Tasks;
 
     public class OtpService
     {
-        private static ConcurrentDictionary<string, (string Otp, DateTime Expiry)> _otpStore = new ConcurrentDictionary<string, (string, DateTime)>();
+        private static readonly ConcurrentDictionary<string, (string Otp, DateTime Expiry)> _otpStore = new();
 
         public OtpService()
-        { }
+        {
+            // Constructor logic if needed
+        }
 
-        public async Task<string> GenerateOtpAsync(string email)
+        public Task<string> GenerateOtpAsync(string email)
         {
             var newOtp = new Random().Next(100000, 999999).ToString();
             var expiry = DateTime.UtcNow.AddMinutes(10); // OTP valid for 10 minutes
             _otpStore[email] = (newOtp, expiry);
 
-            return newOtp;
+            return Task.FromResult(newOtp); // Return Task for async compatibility
         }
 
         public bool VerifyOtp(string email, string otp)

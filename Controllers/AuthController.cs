@@ -94,6 +94,9 @@ namespace ProjectHephaistos.Controllers
             _jwthelper.ValidateToken(Authorization);
             var user = await _context.Users.SingleOrDefaultAsync(u => u.Id == _jwthelper.ExtractUserIdFromToken(Authorization));
 
+            if (user == null)
+                return NotFound("Felhasználó nem található.");
+
             if (!BCrypt.Net.BCrypt.Verify(request.OldPassword, user.PasswordHash))
                 return BadRequest("Hibás jelszó.");
 
@@ -119,6 +122,28 @@ namespace ProjectHephaistos.Controllers
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
             await _context.SaveChangesAsync();
             return Ok("Jelszó sikeresen megváltoztatva.");
+        }
+
+        [HttpPost("generate-otp")]
+        public async Task<IActionResult> GenerateOtp([FromBody] OtpRequest request)
+        {
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == request.Email);
+            if (user == null)
+            {
+                return BadRequest("Nincs regisztrált felhasználó ezzel az email címmel.");
+            }
+
+            var otp = await _otpService.GenerateOtpAsync(request.Email);
+
+            // Provide required parameters for SendEmailAsync
+            var subject = "Egyszeri hitelesítési kód";
+            var body = $"Az egyszeri hitelesítési kódod: {otp}";
+            var senderEmail = _configuration.GetValue<string>("EmailSettings:FromAddress");
+            var senderName = _configuration.GetValue<string>("EmailSettings:FromName");
+
+            await _emailService.SendEmailAsync(request.Email, subject, body, senderEmail, senderName);
+
+            return Ok("Az egyszeri hitelesítési kód elküldve az email címre.");
         }
     }
 }
