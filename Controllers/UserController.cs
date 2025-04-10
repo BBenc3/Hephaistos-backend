@@ -46,6 +46,7 @@ namespace ProjectHephaistos.Controllers
             {
                 username = user.Username,
                 email = user.Email,
+                role = user.Role,
                 startYear = user.StartYear,
                 major = user.Major != null ? new
                 {
@@ -104,6 +105,7 @@ namespace ProjectHephaistos.Controllers
             {
                 username = user.Username,
                 email = user.Email,
+                role = user.Role,
                 startYear = user.StartYear,
                 major = user.Major != null ? new
                 {
