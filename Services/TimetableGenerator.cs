@@ -47,9 +47,19 @@ namespace ProjectHephaistos.Services
                 }
             }
 
+            // Ensure unique schedules based on subject name, day, start and end time.
+            var uniqueSchedules = selectedSchedules
+                .GroupBy(s => new { s.Subject?.Name, s.DayOfWeek, s.StartTime, s.EndTime })
+                .Select(g => g.First())
+                .ToList();
 
+            // Ensure unique omitted subjects based on subject name.
+            var uniqueOmittedSubjects = omittedSubjects
+                .GroupBy(s => s.Name)
+                .Select(g => g.First())
+                .ToList();
 
-            return (selectedSchedules, omittedSubjects);
+            return (uniqueSchedules, uniqueOmittedSubjects);
         }
 
         private bool IsOverlapping(SubjectSchedule newSchedule, List<SubjectSchedule> existingSchedules)

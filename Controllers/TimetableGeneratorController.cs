@@ -52,21 +52,28 @@ namespace ProjectHephaistos.Controllers
                 // Timetable generálás
                 var (timetable, omittedSubjects) = _timetableGenerator.GenerateClosestTimetable(creditValue, availableSubjects, existingSchedules);
 
-                var simplifiedTimetable = timetable.Select(schedule => new
-                {
-                    SubjectName = schedule.Subject?.Name,
-                    DayOfWeek = schedule.DayOfWeek,
-                    StartTime = schedule.StartTime,
-                    EndTime = schedule.EndTime
-                }).ToList();
+                var simplifiedTimetable = timetable
+                    .Select(schedule => new
+                    {
+                        SubjectName = schedule.Subject?.Name,
+                        DayOfWeek = schedule.DayOfWeek,
+                        StartTime = schedule.StartTime,
+                        EndTime = schedule.EndTime
+                    })
+                    .GroupBy(x => new { x.SubjectName, x.DayOfWeek, x.StartTime, x.EndTime })
+                    .Select(g => g.First())
+                    .ToList();
+
+                var uniqueOmittedSubjects = omittedSubjects
+                    .Select(subject => new { SubjectName = subject.Name })
+                    .GroupBy(x => x.SubjectName)
+                    .Select(g => g.First())
+                    .ToList();
 
                 return Ok(new
                 {
                     Timetable = simplifiedTimetable,
-                    OmittedSubjects = omittedSubjects.Select(subject => new
-                    {
-                        SubjectName = subject.Name
-                    }).ToList()
+                    OmittedSubjects = uniqueOmittedSubjects
                 });
             }
             catch (Exception ex)
