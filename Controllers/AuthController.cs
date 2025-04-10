@@ -32,21 +32,15 @@ namespace ProjectHephaistos.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
-            var existingUser = await _context.Users.SingleOrDefaultAsync(u => u.Email == request.Email);
-            if (existingUser != null)
+            var emailExists = await _context.Users.AnyAsync(u => u.Email == request.Email);
+            if (emailExists)
                 return BadRequest("Ezzel az email címmel már regisztráltak.");
 
-            var usersMajor = await _context.Majors.SingleOrDefaultAsync(m => m.Id == request.MajorId);
-            if (usersMajor == null)
+            var userMajor = await _context.Majors.SingleOrDefaultAsync(m => m.Id == request.MajorId);
+            if (userMajor == null)
                 return BadRequest("Nem található a megadott szak.");
 
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
-
-            var userMajor = await _context.Majors.FirstOrDefaultAsync(x => x.Id == request.MajorId);
-            if (userMajor == null)
-            {
-                return BadRequest("Nem található a megadott szak.");
-            }
 
             var newUser = new User
             {
