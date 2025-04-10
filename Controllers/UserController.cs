@@ -287,6 +287,13 @@ namespace ProjectHephaistos.Controllers
             if (_context.Users.Any(u => u.Username == dto.Username))
                 return Conflict("Már létezik ilyen felhasználónév.");
 
+            // Validate StartYear
+            int currentYear = DateTime.Now.Year;
+            if (dto.StartYear == 0 || dto.StartYear < currentYear - 20)
+            {
+                return BadRequest("A kezdés éve nem lehet 0 vagy a jelenlegi évnél 20 évvel korábbi.");
+            }
+
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
 
             var user = new User
@@ -294,7 +301,7 @@ namespace ProjectHephaistos.Controllers
                 Username = dto.Username,
                 Email = dto.Email,
                 PasswordHash = passwordHash,
-                StartYear = dto.StartYear ?? DateTime.Now.Year,
+                StartYear = dto.StartYear ?? currentYear,
                 Role = dto.Role ?? "User",
                 CreatedAt = DateTime.UtcNow,
                 Active = true,
